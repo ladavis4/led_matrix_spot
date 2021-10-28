@@ -1,24 +1,27 @@
+import spotipy
 from PIL import Image
 import requests
 from io import BytesIO
+from spotipy import SpotifyClientCredentials, SpotifyOAuth
+import urllib.request
+import json
+
 
 
 class spotifyCaller():
     def __init__(self):
-        pass
+        self.CID = '1fba714b4aab4063ad674ccf88a75a95'
+        self.SECRET = 'd474333d8628450da05a913e8c3e0641'
+        self.scope = "user-read-currently-playing"
+        self.username = "ldavisiv2017"
+        self.redirect_uri = "http://localhost:8888/callback/"
+
+        self.sp = spotipy.Spotify(auth_manager=SpotifyOAuth(redirect_uri=self.redirect_uri, client_secret=self.SECRET, client_id=self.CID, scope=self.scope))
 
     def get_current_img(self):  # Function pulls tract number from census website given lat/lon.
-        # Create the custom url
-        headers = {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer BQDspLVRsNxnyC4FdgGvulrz7rVYKCfaJwHj5IqZWrH8wzfdj1YdKZQlf39E_7k9PJErsRCJZQFjDEwtY3kfR1hGuL-U_mv8QS3RXXXHAY_un0dOqkws7oBuBr-FqOu2HouMumuVTQEYnUH4CdVv9XSMYd4PyXQtvA6RK7D4yqnFEw',
-        }
-        params = (('market', 'ES'),)
-        response = requests.get('https://api.spotify.com/v1/me/player/currently-playing', headers=headers,
-                                params=params)
-        data = response.json()
-        url = data['item']['album']['images'][2]['url']
+        response = self.sp.currently_playing()
+
+        url = response['item']['album']['images'][2]['url']
         response = requests.get(url)
         img = Image.open(BytesIO(response.content))
 
