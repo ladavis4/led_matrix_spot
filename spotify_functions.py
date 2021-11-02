@@ -20,7 +20,6 @@ class spotifyCaller():
 
     def get_current_img(self):  # Function pulls tract number from census website given lat/lon.
         response = self.sp.currently_playing()
-
         url = response['item']['album']['images'][2]['url']
         response = requests.get(url)
         img = Image.open(BytesIO(response.content))
