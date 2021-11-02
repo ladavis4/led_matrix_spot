@@ -1,24 +1,20 @@
-from spotify_functions import spotifyCaller
-from PIL import Image, ImageDraw
-from rgbmatrix import RGBMatrix, RGBMatrixOptions
+from sim_display_functions import simDisplay
+#from display_functions import Display
+from spotify_functions import spotifyWrapper
 import time
 
 
-options = RGBMatrixOptions()
-options.rows = 64
-options.cols= 64
-options.gpio_slowdown = 4
 
-matrix = RGBMatrix(options = options)
 
-caller = spotifyCaller()
- 
+wrapper = spotifyWrapper()
+display = simDisplay(64,64)
 
 
 while(1):
-    image = caller.get_current_img()
-    matrix.Clear()
-    matrix.SetImage(image, 0, 0)
+    image = wrapper.get_current_img()
+    display.clear_image()
+    display.display_image(image)
+
     time.sleep(10)
 
 

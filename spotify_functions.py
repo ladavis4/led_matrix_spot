@@ -8,7 +8,7 @@ import json
 
 
 
-class spotifyCaller():
+class spotifyWrapper():
     def __init__(self):
         self.CID = '1fba714b4aab4063ad674ccf88a75a95'
         self.SECRET = 'd474333d8628450da05a913e8c3e0641'
@@ -28,7 +28,7 @@ class spotifyCaller():
 
 
 if __name__ == "__main__":
-    caller = spotifyCaller()
+    caller = spotifyWrapper()
     img = caller.get_current_img()
     img.show()
 
