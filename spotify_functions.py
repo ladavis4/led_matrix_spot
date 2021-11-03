@@ -7,7 +7,6 @@ import urllib.request
 import json
 
 
-
 class spotifyWrapper():
     def __init__(self):
         self.CID = '1fba714b4aab4063ad674ccf88a75a95'
@@ -16,7 +15,18 @@ class spotifyWrapper():
         self.username = "ldavisiv2017"
         self.redirect_uri = "http://localhost:8888/callback/"
 
-        self.sp = spotipy.Spotify(auth_manager=SpotifyOAuth(redirect_uri=self.redirect_uri, client_secret=self.SECRET, client_id=self.CID, scope=self.scope))
+        self.sp = spotipy.Spotify(auth_manager=SpotifyOAuth(redirect_uri=self.redirect_uri, client_secret=self.SECRET,
+                                                            client_id=self.CID, scope=self.scope))
+
+    def is_online(self):
+        response = self.sp.currently_playing()
+        if response is not None:
+            out = True
+        else:
+            out = False
+        return out
+
+
 
     def get_current_img(self):  # Function pulls tract number from census website given lat/lon.
         response = self.sp.currently_playing()
