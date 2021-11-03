@@ -32,7 +32,7 @@ class simDisplay():
         self.screen.blit(py_image, (0, 0))
         pygame.display.flip()
 
-    def display_time(self):
+    def display_time_and_weather(self, image, temp):
         # Get current time
         now = datetime.now()
         current_time = now.strftime("%H:%M:%S")
@@ -43,6 +43,20 @@ class simDisplay():
         txt_rect.center = ((self.width * self.scaler)/2, (self.height * self.scaler)/2)
         self.screen.blit(self.background, (0, 0))
         self.screen.blit(txt_surf, txt_rect)
+
+        # Add to pygame surface
+        txt_surf = self.font.render(str(temp), False, WHITE)
+        txt_rect = txt_surf.get_rect()
+        txt_rect.center = ((self.width * self.scaler) / 2, (self.height * self.scaler))
+        self.screen.blit(txt_surf, txt_rect)
+
+        mode = image.mode
+        size = image.size
+        data = image.tobytes()
+
+        py_image = pygame.image.fromstring(data, size, mode)
+        py_image = pygame.transform.scale(py_image, (32 * self.scaler, 32 * self.scaler))
+        self.screen.blit(py_image, (0, 0))
         pygame.display.flip()
 
     def clear_image(self):
