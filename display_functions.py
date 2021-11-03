@@ -22,6 +22,9 @@ class Display:
         self.screen = pygame.surface.Surface((self.width, self.height))
         self.background = pygame.surface.Surface((self.width, self.height))
         self.background.fill(BLACK)
+        pygame.font.init()
+        self.font = pygame.font.Font("PTM55FT.ttf", 13)
+        
 
     def display_image(self, image):
         self.image = image
@@ -41,11 +44,11 @@ class Display:
         # Add to pygame surface
         txt_surf = self.font.render(current_time, False, WHITE)
         txt_rect = txt_surf.get_rect()
-        txt_rect.center = (self.width/2, self.height/2)
+        txt_rect.midtop = (self.width/2, 0)
         self.screen.blit(self.background, (0, 0))
         self.screen.blit(txt_surf, txt_rect)
 
-        self.image = pygame.surfarray.array3d(self.surface)
+        self.image = Image.fromarray(pygame.surfarray.pixels3d(self.screen).swapaxes(1,0))
         self.display_image(self.image)
 
 
