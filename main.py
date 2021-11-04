@@ -1,5 +1,5 @@
-from sim_display_functions import simDisplay
-#from display_functions import Display
+#from sim_display_functions import simDisplay
+from display_functions import Display
 from spotify_functions import spotifyWrapper
 import time
 from datetime import datetime
@@ -10,7 +10,7 @@ from weather_functions import weatherAPI
 
 
 spotify = spotifyWrapper()
-display = simDisplay(64, 64)
+display = Display(64, 64)
 weather = weatherAPI('Philadelphia')
 
 temp = weather.get_temp()
@@ -22,7 +22,7 @@ while 1:
     else:
         display.display_time_and_weather(img, temp)
 
-    time.sleep(.1)
+    time.sleep(.1)  
 
 
 

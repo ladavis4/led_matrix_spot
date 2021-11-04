@@ -48,10 +48,10 @@ class Display:
         self.screen.blit(self.background, (0, 0))
         self.screen.blit(txt_surf, txt_rect)
 
-        # Add to pygame surface
-        txt_surf = self.font.render(str(temp), False, WHITE)
+        # Add Temperature to surface
+        txt_surf = self.font.render(str(temp) + "F", False, WHITE)
         txt_rect = txt_surf.get_rect()
-        txt_rect.midbottom = (self.width / 2, self.height)
+        txt_rect.midbottom = (self.width/ 4, self.height + 3)
         self.screen.blit(txt_surf, txt_rect)
 
         mode = image.mode
@@ -60,7 +60,9 @@ class Display:
 
         py_image = pygame.image.fromstring(data, size, mode)
         py_image = pygame.transform.scale(py_image, (32, 32))
-        self.screen.blit(py_image, (32, 32))
+        py_rect = py_image.get_rect()
+        py_rect.midbottom = (self.width*3/ 4, self.height + 7)
+        self.screen.blit(py_image, py_rect)
 
         self.image = Image.fromarray(pygame.surfarray.pixels3d(self.screen).swapaxes(1, 0))
         self.display_image(self.image)
