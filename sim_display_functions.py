@@ -4,15 +4,18 @@ from datetime import datetime
 
 from constants import *
 
-class simDisplay():
+
+class SimDisplay:
     def __init__(self, width, height, scaler=6):
         #pygame
         pygame.init()
-        self.screen = pygame.display.set_mode((width * scaler, height * scaler))
+        self.out_screen = pygame.display.set_mode((width * scaler, height * scaler))
+        self.screen = pygame.surface.Surface((width, height))
         pygame.display.set_caption("Display")
         pygame.font.init()
-        self.font = pygame.font.Font(r"C:\Users\ladav\PycharmProjects\led_matrix_spot\PTM55FT.ttf", 16)
-        self.background = pygame.surface.Surface((width * scaler, height * scaler))
+        self.font_time = pygame.font.Font(r"PTM55FT.ttf", 20)
+        self.font_temp = pygame.font.Font(r"PTM55FT.ttf", 13)
+        self.background = pygame.surface.Surface((width, height))
         self.background.fill(BLACK)
 
         self.image = Image.new("RGB", (width, height))
@@ -28,35 +31,44 @@ class simDisplay():
         data = image.tobytes()
 
         py_image = pygame.image.fromstring(data, size, mode)
-        py_image = pygame.transform.scale(py_image, (self.width * self.scaler, self.height * self.scaler))
+        py_image = pygame.transform.scale(py_image, (self.width, self.height))
         self.screen.blit(py_image, (0, 0))
+        picture = pygame.transform.scale(self.screen, (self.width * self.scaler, self.height * self.scaler))
+        self.out_screen.blit(picture, (0, 0))
         pygame.display.flip()
 
     def display_time_and_weather(self, image, temp):
         # Get current time
         now = datetime.now()
-        current_time = now.strftime("%H:%M:%S")
+        current_time = now.strftime("%H:%M")
 
-        # Add to pygame surface
-        txt_surf = self.font.render(current_time, False, WHITE)
+        # Add time to surface
+        txt_surf = self.font_time.render(current_time, False, WHITE)
         txt_rect = txt_surf.get_rect()
-        txt_rect.center = ((self.width * self.scaler)/2, (self.height * self.scaler)/2)
+        txt_rect.center = (self.width/2, self.height/2)
         self.screen.blit(self.background, (0, 0))
         self.screen.blit(txt_surf, txt_rect)
 
-        # Add to pygame surface
-        txt_surf = self.font.render(str(temp), False, WHITE)
+        # Add Temperature to surface
+        txt_surf = self.font_temp.render(str(temp) + "F", False, WHITE)
         txt_rect = txt_surf.get_rect()
-        txt_rect.center = ((self.width * self.scaler) / 2, (self.height * self.scaler))
+        txt_rect.midbottom = (self.width/4, self.height)
         self.screen.blit(txt_surf, txt_rect)
 
+        # Weather to surface
         mode = image.mode
         size = image.size
         data = image.tobytes()
 
-        py_image = pygame.image.fromstring(data, size, mode)
-        py_image = pygame.transform.scale(py_image, (32 * self.scaler, 32 * self.scaler))
-        self.screen.blit(py_image, (0, 0))
+        weather_image = pygame.image.fromstring(data, size, mode)
+        weather_image = pygame.transform.scale(weather_image, (32, 28))
+        weather_rect = weather_image.get_rect()
+        weather_rect.midbottom = (self.width * 3 / 4, self.height + 6)
+        self.screen.blit(weather_image, weather_rect)
+
+        # Specific to sim
+        picture = pygame.transform.scale(self.screen, (self.width * self.scaler, self.height * self.scaler))
+        self.out_screen.blit(picture, (0, 0))
         pygame.display.flip()
 
     def clear_image(self):

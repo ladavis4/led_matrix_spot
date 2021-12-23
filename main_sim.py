@@ -1,13 +1,12 @@
-from display_functions import Display
+from sim_display_functions import SimDisplay
 from spotify_functions import SpotifyWrapper
 import time
 from weather_functions import weatherAPI
 import threading
 from constants import *
 
-
 spotify = SpotifyWrapper()
-display = Display(64, 64)
+display = SimDisplay(64, 64)
 weather = weatherAPI('Claremont')
 
 temp = weather.get_temp()
@@ -42,10 +41,7 @@ while 1:
         display.display_image(spotify_image)
     else:
         display.display_time_and_weather(weather_image, temp)
-    time.sleep(.1)
-
-
-
+    time.sleep(.1)  
 
 
 

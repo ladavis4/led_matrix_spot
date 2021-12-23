@@ -1,2 +1,5 @@
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+
+SPOTIFY_UPDATE_FREQ = 10 # seconds
+WEATHER_UPDATE_FREQ = 300 # seconds

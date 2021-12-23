@@ -15,7 +15,7 @@ class weatherAPI():
 
     def get_temp(self):  # Function pulls tract number from census website given lat/lon.
         string = 'https://api.openweathermap.org/data/2.5/weather?q=' + self.city_name + '&appid=' + self.KEY + "&units=imperial"
-        print(string)
+        #print(string)
 
         response = urllib.request.urlopen(string)
         self.data = json.load(response)
