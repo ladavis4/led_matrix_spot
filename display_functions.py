@@ -23,9 +23,9 @@ class Display:
         self.background = pygame.surface.Surface((self.width, self.height))
         self.background.fill(BLACK)
         pygame.font.init()
-        self.font_time = pygame.font.Font(r"PTM55FT.ttf", 20)
-        self.font_temp = pygame.font.Font(r"PTM55FT.ttf", 13)
-
+        self.font_time = pygame.font.Font(r"VeraMono.ttf", 20)
+        self.font_temp = pygame.font.Font(r"VeraMono.ttf", 13)
+        self.font_stocks = pygame.font.Font(r"VeraMono.ttf", 10)
         self.image = Image.new("RGB", (width, height))
 
     def display_image(self, image):
@@ -38,7 +38,7 @@ class Display:
     def clear_image(self):
         self.matrix.Clear()
 
-    def display_time_and_weather(self, image, temp):
+    def display_time_and_weather(self, image, temp, stock_name, stock_price):
         # Get current time
         now = datetime.now()
         current_time = now.strftime("%H:%M")
@@ -65,6 +65,12 @@ class Display:
         weather_rect = weather_image.get_rect()
         weather_rect.midbottom = (self.width * 3 / 4, self.height + 6)
         self.screen.blit(weather_image, weather_rect)
+
+        # Add stocks to surface
+        stock_txt_surf = self.font_stocks.render(f"{stock_name}:{stock_price}", False, WHITE)
+        stock_txt_rect = stock_txt_surf.get_rect()
+        stock_txt_rect.midtop = (self.width / 2, 1)
+        self.screen.blit(stock_txt_surf, stock_txt_rect)
 
         self.image = Image.fromarray(pygame.surfarray.pixels3d(self.screen).swapaxes(1, 0))
         self.display_image(self.image)

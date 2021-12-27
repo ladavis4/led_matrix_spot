@@ -3,8 +3,7 @@ from PIL import Image
 import requests
 from io import BytesIO
 from spotipy import SpotifyClientCredentials, SpotifyOAuth
-import urllib.request
-import json
+
 
 
 class SpotifyWrapper:
@@ -17,6 +16,8 @@ class SpotifyWrapper:
 
         self.sp = spotipy.Spotify(auth_manager=SpotifyOAuth(redirect_uri=self.redirect_uri, client_secret=self.SECRET,
                                                             client_id=self.CID, scope=self.scope))
+        self.img = None
+        self.current_song_name = None
 
     def is_online(self):
         response = self.sp.currently_playing()
@@ -26,15 +27,14 @@ class SpotifyWrapper:
             out = False
         return out
 
-
-
     def get_current_img(self):  # Function pulls tract number from census website given lat/lon.
         response = self.sp.currently_playing()
+        self.current_song_name = response['item']['name']
         url = response['item']['album']['images'][2]['url']
         response = requests.get(url)
-        img = Image.open(BytesIO(response.content))
+        self.img = Image.open(BytesIO(response.content))
 
-        return img
+        return self.img
 
 
 if __name__ == "__main__":
