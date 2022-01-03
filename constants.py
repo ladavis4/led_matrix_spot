@@ -1,7 +1,12 @@
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+BLUE = (34, 95, 186)
 
-SPOTIFY_UPDATE_FREQ = 10  # seconds
+
+WIDTH = 64
+HEIGHT = 64
+
+SPOTIFY_UPDATE_FREQ = 3  # seconds
 WEATHER_UPDATE_FREQ = 300  # seconds
 STOCKS_UPDATE_FREQ = 3600  # seconds
 STOCK_CHANGE_FREQ = 10  # seconds
