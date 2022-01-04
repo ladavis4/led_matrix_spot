@@ -2,6 +2,40 @@ import pygame
 from constants import *
 from datetime import datetime
 
+class ImageDisplay:
+    def __init__(self, screen, image_path_list):
+        self.done = False
+        self.screen = screen
+        self.image_num = 0
+        self.max_image_num = len(image_path_list) - 1
+        self.image_path_list = image_path_list
+
+        self.phase_time = pygame.time.get_ticks()
+
+        self.image = pygame.image.load(image_path_list[self.image_num])
+        self.image = pygame.transform.scale(self.image, (WIDTH, HEIGHT))
+        self.image = self.image.convert()
+
+        self.screen.blit(self.image, (0, 0))
+
+    def update(self):
+        if pygame.time.get_ticks() - self.phase_time > 5000:
+            self.change_image()
+
+    def change_image(self):
+        self.phase_time = pygame.time.get_ticks()
+        self.image_num += 1
+        if self.image_num > self.max_image_num:
+            self.done = True
+        else:
+            self.image = pygame.image.load(self.image_path_list[self.image_num])
+            self.image = pygame.transform.scale(self.image, (WIDTH, HEIGHT))
+            self.image = self.image.convert()
+
+            self.screen.blit(self.image, (0, 0))
+
+
+
 class CalDisplay:
     def __init__(self, screen, event_times, events):
         self.done = False
@@ -21,7 +55,7 @@ class CalDisplay:
         # render text for the screen
         self.font_title = pygame.font.Font(r"VeraMono.ttf", 12)
         self.font_title.underline = True
-        self.font = pygame.font.Font(r"VeraMono.ttf", 10, underline=True)
+        self.font = pygame.font.Font(r"VeraMono.ttf", 10)
         # create sprites for each event and time
         self.text_sprites = pygame.sprite.Group()
         self.title = self.text_sprite("Calendar", self.font_title, (WIDTH/2, 6), BLUE, center=True)
@@ -35,6 +69,7 @@ class CalDisplay:
         y = 18
 
         for i in range(len(event_times)):
+            # show the first 4 calendar events of the day
             time_sprite = self.text_sprite(self.event_times[i], self.font, (x, y), BLUE)
             self.text_sprites.add(time_sprite)
             x_size = time_sprite.rect.size[0]
@@ -50,7 +85,7 @@ class CalDisplay:
             x = 0
             y += font_height
 
-            if i == 2:
+            if i == 3:
                 break
 
     def update(self):
@@ -104,7 +139,7 @@ class CalDisplay:
             self.rect.move_ip(-2, 0)
 
 class TimeDisplay:
-    def __init__(self, screen, temp_image, temp, stock_names, stock_prices):
+    def __init__(self, screen, temp_image, temp, stock_names, stock_prices, background_path=None):
         self.done = False
 
         self.screen = screen
@@ -140,6 +175,16 @@ class TimeDisplay:
         self.temp_image_sprite = self.image_sprite(self.temp_image, (WIDTH*3/4, 54), center=True)
         self.sprites.add(self.temp_image_sprite)
 
+        # background
+        if background_path:
+            self.background = pygame.image.load(background_path)
+            self.background = pygame.transform.scale(self.background, (WIDTH, HEIGHT))
+            self.background = self.background.convert()
+        else:
+            self.background = pygame.Surface((WIDTH, HEIGHT))
+            self.background.fill(BLACK)
+
+
     def change_stock(self):
         self.disp_stock_num += 1
         if self.disp_stock_num == self.num_phases:
@@ -151,7 +196,7 @@ class TimeDisplay:
             self.phase_time = pygame.time.get_ticks()
 
     def update(self):
-        self.screen.fill(BLACK)
+        self.screen.blit(self.background, (0,0))
         now = datetime.now()
         self.current_time = now.strftime("%H:%M")
 
