@@ -20,7 +20,6 @@ def check_spotify():
         spotify_flag = False
     threading.Timer(SPOTIFY_UPDATE_FREQ, check_spotify).start()
 
-
 def update_stocks():
     global stock_prices
     stock_prices = stocks.all_stock_prices()
@@ -48,10 +47,9 @@ def change_display_stock():
 if __name__ == "__main__":
     sim = False
 
-
-
     # images
-    image_path_list = ["vibing_cat.jpg", "tf2.jpg", "rl.png", "bf.jpg"]
+    image_path_list = ["vibing_cat.bmp"]
+    
     # stocks
     stock_names = ['TSLA', 'PLTR', 'MTCH', 'TSP']
     stock_num = 0
@@ -69,9 +67,10 @@ if __name__ == "__main__":
 
     # calendar
     calendar = Calendar()
-    times, events = calendar.get_today_events()
-    print(times, events)
+    times, events = calendar.get_today_events() # update calendar
 
+    
+    
     # spotify
     spotify = SpotifyWrapper()
     global spotify_flag
@@ -99,19 +98,19 @@ if __name__ == "__main__":
 
     while 1:
         while not spotify_flag:
-            """image_disp = ImageDisplay(small_screen, image_path_list)
+            image_disp = ImageDisplay(small_screen, image_path_list)
             while not image_disp.done and not spotify_flag:
                 image_disp.update()
                 if sim:
                     screen.blit(pygame.transform.scale(small_screen, (256, 256)), (0, 0))
                 else:
-                    image = Image.fromarray(pygame.surfarray.pixels3d(screen).swapaxes(1, 0))
+                    image = Image.fromarray(pygame.surfarray.pixels3d(small_screen).swapaxes(1, 0))
                     matrix.SetImage(image, 0, 0)
 
                 pygame.display.flip()
                 pygame.event.pump()
                 clock.tick(10)
-                """
+                
 
             time_disp = TimeDisplay(small_screen, weather_image, temp, stock_names, stock_prices)
             while not time_disp.done and not spotify_flag:
@@ -121,12 +120,13 @@ if __name__ == "__main__":
                 else:
                     image = Image.fromarray(pygame.surfarray.pixels3d(small_screen).swapaxes(1, 0))
                     matrix.SetImage(image, 0, 0)
-                    print("to disp time")
 
                 pygame.display.flip()
                 pygame.event.pump()
                 clock.tick(10)
-
+                
+            
+            times, events = calendar.get_today_events() # update calendar
             cal_disp = CalDisplay(small_screen, times, events)
             while not cal_disp.done and not spotify_flag:
                 cal_disp.update()
@@ -146,7 +146,7 @@ if __name__ == "__main__":
             if sim:
                 screen.blit(pygame.transform.scale(small_screen, (256, 256)), (0, 0))
             else:
-                image = Image.fromarray(pygame.surfarray.pixels3d(screen).swapaxes(1, 0))
+                image = Image.fromarray(pygame.surfarray.pixels3d(small_screen).swapaxes(1, 0))
                 matrix.SetImage(image, 0, 0)
             pygame.display.flip()
             pygame.event.pump()

@@ -12,9 +12,8 @@ class ImageDisplay:
 
         self.phase_time = pygame.time.get_ticks()
 
-        self.image = pygame.image.load(image_path_list[self.image_num])
+        self.image = pygame.image.load(image_path_list[self.image_num]).convert()
         self.image = pygame.transform.scale(self.image, (WIDTH, HEIGHT))
-        self.image = self.image.convert()
 
         self.screen.blit(self.image, (0, 0))
 
