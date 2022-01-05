@@ -1,31 +1,13 @@
-from sim_display_functions import SimDisplay
 from spotify_functions import SpotifyWrapper
-import time
+from calendar_functions import Calendar
 from weather_functions import weatherAPI
 import threading
 from constants import *
 from stock_functions import StockWrapper
-
-
-stock_names = ['TSLA', 'PLTR', 'MTCH', 'TSP']
-stock_num = 0
-num_of_stocks = len(stock_names) - 1
-city_name = 'Claremont'
-
-stocks = StockWrapper(stock_names)
-spotify = SpotifyWrapper()
-display = SimDisplay(64, 64)
-weather = weatherAPI(city_name)
-
-temp = None
-weather_image = None
-stock_prices = None
-
-spotify_flag = False
-spotify_image = None
-spotify_title = None
-display_song_name = None
-
+import pygame
+from display_programs import CalDisplay, TimeDisplay, SpotifyDisplay, ImageDisplay
+from rgbmatrix import RGBMatrix, RGBMatrixOptions
+from PIL import Image
 
 def check_spotify():
     global spotify_flag
@@ -63,21 +45,108 @@ def change_display_stock():
     threading.Timer(STOCK_CHANGE_FREQ, change_display_stock).start()
 
 
-check_spotify()
-update_weather()
-update_stocks()
-change_display_stock()
-
-
-while 1:
-    if spotify_flag:
-        display.display_image(spotify_image)
-    else:
-        display.display_time_and_weather(weather_image, temp, stock_names[stock_num], stock_prices[stock_num])
-    time.sleep(.05)
+if __name__ == "__main__":
+    sim = True
 
 
 
+    # images
+    image_path_list = ["vibing_cat.jpg", "tf2.jpg", "rl.png", "bf.jpg"]
+    # stocks
+    stock_names = ['TSLA', 'PLTR', 'MTCH', 'TSP']
+    stock_num = 0
+    num_of_stocks = len(stock_names) - 1
+    stocks = StockWrapper(stock_names)
+    stock_prices = None
+    update_stocks()
 
+    # weather
+    city_name = 'Claremont'
+    weather = weatherAPI(city_name)
+    temp = None
+    weather_image = None
+    update_weather()
 
+    # calendar
+    calendar = Calendar()
+    times, events = calendar.get_today_events()
+    print(times, events)
+
+    # spotify
+    spotify = SpotifyWrapper()
+    global spotify_flag
+    global spotify_image
+    spotify_flag = False
+    spotify_image = None
+    spotify_title = None
+    display_song_name = None
+    check_spotify()
+
+    # display and pygame
+    pygame.init()
+    #display_out = pygame.display.set_mode((WIDTH * 4, HEIGHT * 4))
+    screen = pygame.display.set_mode((WIDTH * 4, HEIGHT * 4))
+    small_screen = pygame.surface.Surface((WIDTH, HEIGHT))
+    clock = pygame.time.Clock()
+
+    # led matrix
+    if not sim:
+        options = RGBMatrixOptions()
+        options.rows = WIDTH
+        options.cols = HEIGHT
+        options.gpio_slowdown = 4
+        matrix = RGBMatrix(options=options)
+
+    while 1:
+        while not spotify_flag:
+            image_disp = ImageDisplay(small_screen, image_path_list)
+            while not image_disp.done and not spotify_flag:
+                image_disp.update()
+                if sim:
+                    screen.blit(pygame.transform.scale(small_screen, (256, 256)), (0, 0))
+                else:
+                    image = Image.fromarray(pygame.surfarray.pixels3d(screen).swapaxes(1, 0))
+                    matrix.SetImage(image, 0, 0)
+
+                pygame.display.flip()
+                pygame.event.pump()
+                clock.tick(10)
+
+            time_disp = TimeDisplay(small_screen, weather_image, temp, stock_names, stock_prices)
+            while not time_disp.done and not spotify_flag:
+                time_disp.update()
+                if sim:
+                    screen.blit(pygame.transform.scale(small_screen, (256, 256)), (0, 0))
+                else:
+                    image = Image.fromarray(pygame.surfarray.pixels3d(screen).swapaxes(1, 0))
+                    matrix.SetImage(image, 0, 0)
+
+                pygame.display.flip()
+                pygame.event.pump()
+                clock.tick(10)
+
+            cal_disp = CalDisplay(small_screen, times, events)
+            while not cal_disp.done and not spotify_flag:
+                cal_disp.update()
+                if sim:
+                    screen.blit(pygame.transform.scale(small_screen, (256, 256)), (0, 0))
+                else:
+                    image = Image.fromarray(pygame.surfarray.pixels3d(screen).swapaxes(1, 0))
+                    matrix.SetImage(image, 0, 0)
+
+                pygame.display.flip()
+                pygame.event.pump()
+                clock.tick(10)
+
+        spot_disp = SpotifyDisplay(small_screen, spotify_image)
+        while spotify_flag:
+            spot_disp.update(spotify_image)
+            if sim:
+                screen.blit(pygame.transform.scale(small_screen, (256, 256)), (0, 0))
+            else:
+                image = Image.fromarray(pygame.surfarray.pixels3d(screen).swapaxes(1, 0))
+                matrix.SetImage(image, 0, 0)
+            pygame.display.flip()
+            pygame.event.pump()
+            clock.tick(1)
 
