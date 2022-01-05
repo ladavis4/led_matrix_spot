@@ -46,7 +46,7 @@ def change_display_stock():
 
 
 if __name__ == "__main__":
-    sim = True
+    sim = False
 
 
 
@@ -99,7 +99,7 @@ if __name__ == "__main__":
 
     while 1:
         while not spotify_flag:
-            image_disp = ImageDisplay(small_screen, image_path_list)
+            """image_disp = ImageDisplay(small_screen, image_path_list)
             while not image_disp.done and not spotify_flag:
                 image_disp.update()
                 if sim:
@@ -111,6 +111,7 @@ if __name__ == "__main__":
                 pygame.display.flip()
                 pygame.event.pump()
                 clock.tick(10)
+                """
 
             time_disp = TimeDisplay(small_screen, weather_image, temp, stock_names, stock_prices)
             while not time_disp.done and not spotify_flag:
@@ -118,8 +119,9 @@ if __name__ == "__main__":
                 if sim:
                     screen.blit(pygame.transform.scale(small_screen, (256, 256)), (0, 0))
                 else:
-                    image = Image.fromarray(pygame.surfarray.pixels3d(screen).swapaxes(1, 0))
+                    image = Image.fromarray(pygame.surfarray.pixels3d(small_screen).swapaxes(1, 0))
                     matrix.SetImage(image, 0, 0)
+                    print("to disp time")
 
                 pygame.display.flip()
                 pygame.event.pump()
@@ -131,7 +133,7 @@ if __name__ == "__main__":
                 if sim:
                     screen.blit(pygame.transform.scale(small_screen, (256, 256)), (0, 0))
                 else:
-                    image = Image.fromarray(pygame.surfarray.pixels3d(screen).swapaxes(1, 0))
+                    image = Image.fromarray(pygame.surfarray.pixels3d(small_screen).swapaxes(1, 0))
                     matrix.SetImage(image, 0, 0)
 
                 pygame.display.flip()
