@@ -7,26 +7,31 @@ from constants import *
 
 class Display:
     def __init__(self, width, height):
-        self.options = RGBMatrixOptions()
-        self.options.rows = width
-        self.options.cols = height
-        self.options.gpio_slowdown = 4
-        self.matrix = RGBMatrix(options=self.options)
-        self.image = Image.new("RGB", (width, height))
-
-        self.width = width
-        self.height = height
-
         # pygame
         pygame.init()
-        self.screen = pygame.surface.Surface((self.width, self.height))
-        self.background = pygame.surface.Surface((self.width, self.height))
+        self.screen = pygame.display.set_mode((width, height))
+        pygame.display.set_caption("Display")
+        self.background = pygame.surface.Surface((width, height))
         self.background.fill(BLACK)
         pygame.font.init()
         self.font_time = pygame.font.Font(r"VeraMono.ttf", 20)
         self.font_temp = pygame.font.Font(r"VeraMono.ttf", 13)
         self.font_stocks = pygame.font.Font(r"VeraMono.ttf", 10)
         self.image = Image.new("RGB", (width, height))
+        
+        
+        self.options = RGBMatrixOptions()
+        self.options.rows = width
+        self.options.cols = height
+        self.options.gpio_slowdown = 4
+        self.matrix = RGBMatrix(options=self.options)
+        self.image = Image.new("RGB", (width, height))
+        print("Done with LED matrix init")
+        
+        self.width = width
+        self.height = height
+
+        
 
     def display_image(self, image):
         self.image = image

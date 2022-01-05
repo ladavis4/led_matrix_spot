@@ -6,17 +6,19 @@ import threading
 from constants import *
 from stock_functions import StockWrapper
 
-
-
 stock_names = ['TSLA', 'PLTR', 'MTCH', 'TSP']
 stock_num = 0
 num_of_stocks = len(stock_names) - 1
 city_name = 'Claremont'
 
 stocks = StockWrapper(stock_names)
+print("Done with stock init")
 spotify = SpotifyWrapper()
+print("Done with spotify init")
 display = Display(64, 64)
+print("Done with display init")
 weather = weatherAPI(city_name)
+print("Done with weather init")
 
 temp = None
 weather_image = None
