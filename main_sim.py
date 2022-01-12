@@ -9,6 +9,12 @@ from display_programs import CalDisplay, TimeDisplay, SpotifyDisplay, ImageDispl
 from rgbmatrix import RGBMatrix, RGBMatrixOptions
 from PIL import Image
 
+#Quick settings
+DISPLAY_IMAGES = False
+DISPLAY_MAIN = True
+DISPLAY_CALENDAR = True
+
+
 def check_spotify():
     global spotify_flag
     global spotify_image
@@ -59,17 +65,15 @@ if __name__ == "__main__":
     update_stocks()
 
     # weather
-    city_name = 'Claremont'
+    city_name = 'Philadelphia'
     weather = weatherAPI(city_name)
     temp = None
     weather_image = None
     update_weather()
 
     # calendar
-    calendar = Calendar()
+    calendar = Calendar(tz='US/Eastern')
     times, events = calendar.get_today_events() # update calendar
-
-    
     
     # spotify
     spotify = SpotifyWrapper()
@@ -99,7 +103,7 @@ if __name__ == "__main__":
     while 1:
         while not spotify_flag:
             image_disp = ImageDisplay(small_screen, image_path_list)
-            while not image_disp.done and not spotify_flag:
+            while not image_disp.done and not spotify_flag and DISPLAY_IMAGES:
                 image_disp.update()
                 if sim:
                     screen.blit(pygame.transform.scale(small_screen, (256, 256)), (0, 0))
@@ -113,7 +117,7 @@ if __name__ == "__main__":
                 
 
             time_disp = TimeDisplay(small_screen, weather_image, temp, stock_names, stock_prices)
-            while not time_disp.done and not spotify_flag:
+            while not time_disp.done and not spotify_flag and DISPLAY_MAIN:
                 time_disp.update()
                 if sim:
                     screen.blit(pygame.transform.scale(small_screen, (256, 256)), (0, 0))
@@ -128,7 +132,7 @@ if __name__ == "__main__":
             
             times, events = calendar.get_today_events() # update calendar
             cal_disp = CalDisplay(small_screen, times, events)
-            while not cal_disp.done and not spotify_flag:
+            while not cal_disp.done and not spotify_flag and DISPLAY_CALENDAR:
                 cal_disp.update()
                 if sim:
                     screen.blit(pygame.transform.scale(small_screen, (256, 256)), (0, 0))

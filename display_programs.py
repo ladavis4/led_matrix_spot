@@ -1,6 +1,7 @@
 import pygame
 from constants import *
 from datetime import datetime
+import pytz
 
 class ImageDisplay:
     def __init__(self, screen, image_path_list):
@@ -138,12 +139,10 @@ class CalDisplay:
             self.rect.move_ip(-2, 0)
 
 class TimeDisplay:
-    def __init__(self, screen, temp_image, temp, stock_names, stock_prices, background_path=None):
+    def __init__(self, screen, temp_image, temp, stock_names, stock_prices, background_path=None, tz='US/Eastern'):
         self.done = False
 
         self.screen = screen
-        # flags
-
         # render all the text and add to the pygame sprites
         self.font_time = pygame.font.Font(r"VeraMono.ttf", 20)
         self.font_stocks = pygame.font.Font(r"VeraMono.ttf", 10)
@@ -152,10 +151,12 @@ class TimeDisplay:
 
         # timers
         self.phase_time = pygame.time.get_ticks()
+        self.start_time = pygame.time.get_ticks()
         self.num_phases = len(stock_names)
 
         # time
-        self.current_time = datetime.now().strftime("%H:%M")
+        self.tz = pytz.timezone(tz)
+        self.current_time = datetime.now(tz=self.tz).strftime("%H:%M")
         self.time_sprite = self.text_sprite(self.current_time, self.font_time, (WIDTH/2, HEIGHT/2), WHITE, center=True)
         self.sprites.add(self.time_sprite)
 
@@ -187,7 +188,7 @@ class TimeDisplay:
     def change_stock(self):
         self.disp_stock_num += 1
         if self.disp_stock_num == self.num_phases:
-            self.done = True
+            self.disp_stock_num = 0
         else:
             self.stock_sprite.kill()
             self.stock_sprite = self.text_sprite(f"{self.stock_names[self.disp_stock_num]} {self.stock_prices[self.disp_stock_num]}", self.font_stocks, (WIDTH / 2, 8), WHITE, center=True)
@@ -196,12 +197,15 @@ class TimeDisplay:
 
     def update(self):
         self.screen.blit(self.background, (0,0))
-        now = datetime.now()
+        now = datetime.now(tz=self.tz)
         self.current_time = now.strftime("%H:%M")
 
         if pygame.time.get_ticks() - self.phase_time > 5000:
             self.change_stock()
 
+        if pygame.time.get_ticks() - self.start_time > 40000:
+            self.done = True
+            
         # draw to screen
         self.sprites.draw(self.screen)
 
