@@ -6,14 +6,13 @@ from constants import *
 from stock_functions import StockWrapper
 import pygame
 from display_programs import CalDisplay, TimeDisplay, SpotifyDisplay, ImageDisplay
-from rgbmatrix import RGBMatrix, RGBMatrixOptions
+#from rgbmatrix import RGBMatrix, RGBMatrixOptions
 from PIL import Image
 
 #Quick settings
 DISPLAY_IMAGES = False
 DISPLAY_MAIN = True
 DISPLAY_CALENDAR = True
-
 
 def check_spotify():
     global spotify_flag
@@ -51,7 +50,7 @@ def change_display_stock():
 
 
 if __name__ == "__main__":
-    sim = False
+    sim = True
 
     # images
     image_path_list = ["vibing_cat.bmp"]
@@ -87,7 +86,6 @@ if __name__ == "__main__":
 
     # display and pygame
     pygame.init()
-    #display_out = pygame.display.set_mode((WIDTH * 4, HEIGHT * 4))
     screen = pygame.display.set_mode((WIDTH * 4, HEIGHT * 4))
     small_screen = pygame.surface.Surface((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
