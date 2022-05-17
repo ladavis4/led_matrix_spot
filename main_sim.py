@@ -6,11 +6,10 @@ from constants import *
 from stock_functions import StockWrapper
 import pygame
 from display_programs import CalDisplay, TimeDisplay, SpotifyDisplay, ImageDisplay
-#from rgbmatrix import RGBMatrix, RGBMatrixOptions
 from PIL import Image
 
 #Quick settings
-DISPLAY_IMAGES = False
+DISPLAY_IMAGES = True
 DISPLAY_MAIN = True
 DISPLAY_CALENDAR = True
 
@@ -51,6 +50,9 @@ def change_display_stock():
 
 if __name__ == "__main__":
     sim = True
+
+    if not sim:
+        from rgbmatrix import RGBMatrix, RGBMatrixOptions
 
     # images
     image_path_list = ["vibing_cat.bmp"]

@@ -3,7 +3,7 @@
 **Install python dependencies:**
 - Use the requirements.txt file
 
-**Set up google authentication** 
+**Set up google authentication**  
 To use this application, you must have OAuth client ID credentials provided by the Google cloud platform. 
 - Open the Google Cloud Console
 - From the top left go to APIs & Services > Credentials
