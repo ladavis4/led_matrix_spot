@@ -1,13 +1,16 @@
+import imp
 from utils.spotify_functions import SpotifyWrapper
 from utils.calendar_functions import Calendar
 from utils.weather_functions import weatherAPI
 from utils.constants import *
+from utils.settings_obj import Settings
 from utils.stock_functions import StockWrapper
 from display_programs import CalDisplay, TimeDisplay, SpotifyDisplay, ImageDisplay
 import pygame
 from PIL import Image
 import os
 import threading
+import json
 
 # Settings
 SIM = True
@@ -15,6 +18,33 @@ SIM = True
 # Globals
 global temp, weather_image, stock_prices, spotify_flag, spotify_image  # Information updated from callbacks
 
+
+def write_settings_to_json(settings_obj, debug=False):
+    """"
+    Writes the custom settings object to a dictionary
+    """
+    settings_dict={'button_img':settings_obj.show_image, 'button_time': settings_obj.show_time, 'button_cal':settings_obj.show_calendar}
+    with open('temp/settings.json', 'w') as outfile:
+        json.dump(settings_dict, outfile)
+
+    if debug:
+        print("Wrote settings to file")
+
+def read_settings_json(settings_obj, debug=False):
+    """"
+    Writes the custom settings object to a dictionary
+    """
+    with open('temp/settings.json') as json_file:
+        data = json.load(json_file)
+
+    settings_obj.show_image = data['button_img']
+    settings_obj.show_time = data['button_time']
+    settings_obj.show_calendar = data['button_cal']
+
+    if debug:
+        print(f"Read settings", {data})
+
+    return settings_obj
 
 def main():
     if not SIM:
@@ -26,6 +56,8 @@ def main():
     screen_main = pygame.surface.Surface((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
     display_programs = []
+    settings = Settings()
+    write_settings_to_json(settings, debug=True)
 
     ### IMAGE PROGRAM ###
     image_names = ["vibing_cat.bmp"]
@@ -33,7 +65,8 @@ def main():
     for name in image_names:
         image_path_list.append(os.path.join(os.getcwd(), "images", name))
     image_disp = ImageDisplay(screen_main, image_path_list)
-    display_programs.append(image_disp)
+    if settings.show_image:
+        display_programs.append(image_disp)
 
     ### TIME PROGRAM ###
     # Stock wrapper setup
@@ -45,18 +78,19 @@ def main():
     # Weather wrapper setup
     city_name = 'Philadelphia'
     weather = weatherAPI(city_name)
-
     temp = None
     weather_image = None
     update_weather(weather)
     time_disp = TimeDisplay(screen_main, weather_image, temp, stock_names, stock_prices)
-    display_programs.append(time_disp)
+    if settings.show_time:
+        display_programs.append(time_disp)
 
     ### CALENDAR PROGRAM ###
     calendar = Calendar(tz='US/Eastern')
     times, events = calendar.get_today_events()
     cal_disp = CalDisplay(screen_main, times, events)
-    display_programs.append(cal_disp)
+    if settings.show_calendar:
+        display_programs.append(cal_disp)
 
     ### SPOTIFY PROGRAM ###
     # Only runs when I am playing music on spotify
@@ -87,6 +121,24 @@ def main():
                 program_num += 1
                 if program_num > num_of_programs:
                     program_num = 0
+                
+                    # Apply the settings changes
+                    settings = read_settings_json(settings)
+
+                    display_programs = []
+                    if settings.show_image:
+                        display_programs.append(image_disp)
+                    if settings.show_time:
+                        display_programs.append(time_disp)
+
+                    if settings.show_calendar:
+                        display_programs.append(cal_disp)
+
+
+                    num_of_programs = len(display_programs) - 1
+                    program = display_programs[program_num]
+
+
                 program = display_programs[program_num]
                 program.start()
         else:
@@ -98,7 +150,7 @@ def main():
         else:
             image = Image.fromarray(pygame.surfarray.pixels3d(screen_sim).swapaxes(1, 0))
             matrix.SetImage(image, 0, 0)
-
+        
         pygame.display.flip()
         pygame.event.pump()
         clock.tick(10)
@@ -132,6 +184,7 @@ def update_weather(weather):
     t_weather = threading.Timer(WEATHER_UPDATE_FREQ, update_weather, args=[weather])
     t_weather.daemon = True
     t_weather.start()
+
 
 
 if __name__ == "__main__":

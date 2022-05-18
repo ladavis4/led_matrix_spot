@@ -1,26 +1,34 @@
 import pygame
-from constants import *
+from utils.constants import *
 from datetime import datetime
 import pytz
 
+
 class ImageDisplay:
-    def __init__(self, screen, image_path_list):
+    def __init__(self, screen, image_path_list, len_of_display=5):
+        """
+        :param screen: Pygame surface to update with image from program
+        :param image_path_list: List of image paths for display
+        :param len_of_display: How long to display each image in image path list, seconds
+        """
         self.done = False
         self.screen = screen
         self.image_num = 0
         self.max_image_num = len(image_path_list) - 1
         self.image_path_list = image_path_list
+        self.DISPLAY_TIME = len_of_display * 1000  # Convert to ms
 
         self.phase_time = pygame.time.get_ticks()
-
         self.image = pygame.image.load(image_path_list[self.image_num]).convert()
         self.image = pygame.transform.scale(self.image, (WIDTH, HEIGHT))
-
         self.screen.blit(self.image, (0, 0))
 
+        self.image_path_list = image_path_list
+
     def update(self):
-        if pygame.time.get_ticks() - self.phase_time > 5000:
+        if pygame.time.get_ticks() - self.phase_time > self.DISPLAY_TIME:
             self.change_image()
+        return self.done
 
     def change_image(self):
         self.phase_time = pygame.time.get_ticks()
@@ -33,6 +41,15 @@ class ImageDisplay:
             self.image = self.image.convert()
 
             self.screen.blit(self.image, (0, 0))
+
+    def start(self):
+        self.done = False
+        self.image_num = 0
+        self.phase_time = pygame.time.get_ticks()
+        self.image = pygame.image.load(self.image_path_list[self.image_num]).convert()
+        self.image = pygame.transform.scale(self.image, (WIDTH, HEIGHT))
+        self.screen.blit(self.image, (0, 0))
+
 
 
 
@@ -67,7 +84,7 @@ class CalDisplay:
 
         x = 0
         y = 18
-
+        self.event_times = event_times
         for i in range(len(event_times)):
             # show the first 4 calendar events of the day
             time_sprite = self.text_sprite(self.event_times[i], self.font, (x, y), BLUE)
@@ -110,6 +127,7 @@ class CalDisplay:
 
         # draw to screen
         self.text_sprites.draw(self.screen)
+        return self.done
 
     def check_done_moving(self):
         # assume done until otherwise
@@ -137,6 +155,53 @@ class CalDisplay:
 
         def update(self):
             self.rect.move_ip(-2, 0)
+
+    def start(self):
+        self.done = False
+
+        # flags
+        self.phase = 0  # keeps track of the phase of the display sequence
+        self.phase_done = False
+        self.timer_start = True
+
+        # timers
+        self.phase_time = pygame.time.get_ticks()
+
+        # render text for the screen
+        self.font_title = pygame.font.Font(r"VeraMono.ttf", 12)
+        self.font_title.underline = True
+        self.font = pygame.font.Font(r"VeraMono.ttf", 10)
+        # create sprites for each event and time
+        self.text_sprites = pygame.sprite.Group()
+        self.title = self.text_sprite("Calendar", self.font_title, (WIDTH/2, 6), BLUE, center=True)
+        self.text_sprites.add(self.title)
+
+        # get height and space width of font
+        space = self.font.size(' ')[0]
+        font_height = self.font.size('A')[1]
+
+        x = 0
+        y = 18
+
+        for i in range(len(self.event_times)):
+            # show the first 4 calendar events of the day
+            time_sprite = self.text_sprite(self.event_times[i], self.font, (x, y), BLUE)
+            self.text_sprites.add(time_sprite)
+            x_size = time_sprite.rect.size[0]
+
+            x += (x_size + space)
+            event_sprite = self.text_sprite(self.events[i], self.font, (x, y), BLUE)
+            self.text_sprites.add(event_sprite)
+
+            if event_sprite.rect.size[0] + x > WIDTH:
+                self.long_text = True
+
+            # reset x,y positions
+            x = 0
+            y += font_height
+
+            if i == 3:
+                break
 
 class TimeDisplay:
     def __init__(self, screen, temp_image, temp, stock_names, stock_prices, background_path=None, tz='US/Eastern'):
@@ -208,6 +273,7 @@ class TimeDisplay:
             
         # draw to screen
         self.sprites.draw(self.screen)
+        return self.done
 
 
     class text_sprite(pygame.sprite.Sprite):
@@ -240,18 +306,22 @@ class TimeDisplay:
             else:
                 self.rect.topleft = position
 
+    def start(self):
+        self.done = False
+
+        # timers
+        self.phase_time = pygame.time.get_ticks()
+        self.start_time = pygame.time.get_ticks()
+
+
 class SpotifyDisplay:
     def __init__(self, screen, image):
         self.screen = screen
 
-        self.mode = image.mode
-        self.size = image.size
-        self.data = image.tobytes()
-
-        self.image = pygame.image.fromstring(self.data, self.size, self.mode)
-        self.image = pygame.transform.scale(self.image, (WIDTH, HEIGHT))
-
-        self.screen.blit(self.image, (0, 0))
+        self.mode = None
+        self.size = None
+        self.data = None
+        self.image = None
 
     def update(self, image):
         self.mode = image.mode
