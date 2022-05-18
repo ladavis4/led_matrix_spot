@@ -23,7 +23,7 @@ def write_settings_to_json(settings_obj, debug=False):
     """"
     Writes the custom settings object to a dictionary
     """
-    settings_dict={'button_img':settings_obj.show_image, 'button_time': settings_obj.show_time, 'button_cal':settings_obj.show_calendar}
+    settings_dict={'button_img':settings_obj.show_image, 'button_time': settings_obj.show_time, 'button_cal':settings_obj.show_calendar, 'button_spot':settings_obj.show_spotify}
     with open('temp/settings.json', 'w') as outfile:
         json.dump(settings_dict, outfile)
 
@@ -40,6 +40,7 @@ def read_settings_json(settings_obj, debug=False):
     settings_obj.show_image = data['button_img']
     settings_obj.show_time = data['button_time']
     settings_obj.show_calendar = data['button_cal']
+    settings_obj.show_spotify = data['button_spot']
 
     if debug:
         print(f"Read settings", {data})
@@ -113,36 +114,38 @@ def main():
     program_num = 0
     num_of_programs = len(display_programs) - 1
     program = display_programs[program_num]
+
+    t_settings = pygame.time.get_ticks()
     while 1:
-        if not spotify_flag:
+        #Check if the settings changed
+        current_time = pygame.time.get_ticks()
+        if current_time - t_settings > 5000:
+            t_settings = current_time
+            # Apply the settings changes
+            settings = read_settings_json(settings)
+            display_programs = []
+            if settings.show_image:
+                display_programs.append(image_disp)
+            if settings.show_time:
+                display_programs.append(time_disp)
+            if settings.show_calendar:
+                display_programs.append(cal_disp)
+            num_of_programs = len(display_programs) - 1
+
+        if spotify_flag and settings.show_spotify:
+            spot_disp.update(spotify_image)
+
+        else:
             done = program.update()
             print(program_num)
             if done:
                 program_num += 1
                 if program_num > num_of_programs:
                     program_num = 0
-                
-                    # Apply the settings changes
-                    settings = read_settings_json(settings)
-
-                    display_programs = []
-                    if settings.show_image:
-                        display_programs.append(image_disp)
-                    if settings.show_time:
-                        display_programs.append(time_disp)
-
-                    if settings.show_calendar:
-                        display_programs.append(cal_disp)
-
-
-                    num_of_programs = len(display_programs) - 1
-                    program = display_programs[program_num]
-
 
                 program = display_programs[program_num]
                 program.start()
-        else:
-            spot_disp.update(spotify_image)
+            
 
         # Display the screen
         if SIM:

@@ -2,6 +2,7 @@
     <p>Display Pictures <input type = "checkbox" name = "button_img" value="true" id="button1"/></p>
     <p>Display Weather <input type = "checkbox" name = "button_time" value="true" id="button2"/></p>
     <p>Display Calendar <input type = "checkbox" name = "button_cal" value="true" id="button3"/></p>
+    <p>Display Spotify <input type = "checkbox" name = "button_spot" value="true" id="button4"/></p>
     <p><input type = "submit" value = "Submit" /></p>
 </form>
 
@@ -12,6 +13,8 @@ window.onload = function() {
     var but_img = '{{data.button_img}}';
     var but_weather = '{{data.button_time}}';
     var but_cal = '{{data.button_cal}}';
+    var but_spot = '{{data.button_spot}}';
+
 
     if(but_img=='True'){
         document.getElementById("button1").checked = true;
@@ -21,6 +24,9 @@ window.onload = function() {
     }
     if (but_cal=='True'){
         document.getElementById("button3").checked = true;
+    }
+    if (but_spot=='True'){
+        document.getElementById("button4").checked = true;
     }
 };
 </script>
