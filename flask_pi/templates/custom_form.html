@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html><body>
+<h1> Use Image </h1>
+<input type="number" min="0" max="1" value="1"  id="use_img_val">
+
+<h1> Use Time </h1>
+<input type="number" min="0" max="1" value="1"  id="use_time_val">
+
+<h1> Use Calendar </h1>
+<input type="number" min="0" max="1" value="1"  id="use_cal_val">
+
+<button type="button" id="mode_button">Go Button!</button>
+</body>
+
+
+<script>
+
+button.onclick = function() {
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          document.getElementById("outputlabel").innerHTML = this.responseText;
+        }
+    };
+
+    var x = document.getElementById("use_img_val");
+    var str = "button_img?val=";
+    var out = x.innerHTML;
+    var res = str.concat(out);
+    xhttp.open("GET", res, true);
+    xhttp.send();
+
+    var x = document.getElementById("use_time_val");
+    var str = "button_time?val=";
+    var out = x.innerHTML;
+    var res = str.concat(out);
+    xhttp.open("GET", res, true);
+    xhttp.send();
+
+    var x = document.getElementById("use_cal_val");
+    var str = "button_cal?val=";
+    var out = x.innerHTML;
+    var res = str.concat(out);
+    xhttp.open("GET", res, true);
+    xhttp.send();
+
+}
+
+</script>
+</html>

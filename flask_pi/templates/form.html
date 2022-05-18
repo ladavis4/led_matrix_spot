@@ -1,0 +1,26 @@
+<form action="/" method = "POST">
+    <p>Display Pictures <input type = "checkbox" name = "button_img" value="true" id="button1"/></p>
+    <p>Display Weather <input type = "checkbox" name = "button_time" value="true" id="button2"/></p>
+    <p>Display Calendar <input type = "checkbox" name = "button_cal" value="true" id="button3"/></p>
+    <p><input type = "submit" value = "Submit" /></p>
+</form>
+
+
+<script>
+
+window.onload = function() {
+    var but_img = '{{data.button_img}}';
+    var but_weather = '{{data.button_weather}}';
+    var but_cal = '{{data.button_cal}}';
+
+    if(but_img=='True'){
+        document.getElementById("button1").checked = true;
+    }
+    if(but_weather=='True'){
+        document.getElementById("button2").checked = true;
+    }
+    if (but_cal=='True'){
+        document.getElementById("button3").checked = true;
+    }
+};
+</script>
