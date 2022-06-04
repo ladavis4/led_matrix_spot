@@ -30,4 +30,4 @@ def splash():
         return render_template('form.html', data=data)
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host="0.0.0.0")

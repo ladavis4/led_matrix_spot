@@ -57,8 +57,15 @@ def main():
     screen_main = pygame.surface.Surface((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
     display_programs = []
+
     settings = Settings()
-    write_settings_to_json(settings, debug=True)
+    if not os.path.exists('temp/settings.json'):
+        write_settings_to_json(settings, debug=True)
+    else:
+        settings = read_settings_json(settings)
+        print("Settings already exist, loading old values")
+
+
 
     ### IMAGE PROGRAM ###
     image_names = ["vibing_cat.bmp"]
@@ -137,7 +144,6 @@ def main():
 
         else:
             done = program.update()
-            print(program_num)
             if done:
                 program_num += 1
                 if program_num > num_of_programs:
