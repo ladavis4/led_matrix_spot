@@ -15,7 +15,6 @@ import time
 
 # Settings
 SIM = False
-
 # Globals
 global temp, weather_image, stock_prices, spotify_flag, spotify_image  # Information updated from callbacks
 
@@ -154,15 +153,15 @@ def main():
 
 
         #screen_sim.blit(pygame.transform.scale(screen_main, (256, 256)), (0, 0))
-        image = Image.fromarray(pygame.surfarray.pixels3d(screen_main).swapaxes(1, 0))
-        matrix.SetImage(image, 0, 0)
+        # image = Image.fromarray(pygame.surfarray.pixels3d(screen_main).swapaxes(1, 0))
+        # matrix.SetImage(image, 0, 0)
 
-        # Display the screen
-        # if SIM:
-        #     screen_sim.blit(pygame.transform.scale(screen_main, (256, 256)), (0, 0))
-        # else:
-        #     image = Image.fromarray(pygame.surfarray.pixels3d(screen_main).swapaxes(1, 0))
-        #     matrix.SetImage(image, 0, 0)
+        #Display the screen
+        if SIM:
+            screen_sim.blit(pygame.transform.scale(screen_main, (256, 256)), (0, 0))
+        else:
+            image = Image.fromarray(pygame.surfarray.pixels3d(screen_main).swapaxes(1, 0))
+            matrix.SetImage(image, 0, 0)
         
         pygame.display.flip()
         pygame.event.pump()
