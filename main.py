@@ -77,7 +77,7 @@ def main():
 
     ### TIME PROGRAM ###
     # Stock wrapper setup
-    time.sleep(10)
+    time.sleep(1)
     stock_names = ['TSLA', 'PLTR', 'MTCH', 'TSP']
     global temp, weather_image, stock_prices
     stocks = StockWrapper(stock_names)

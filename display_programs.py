@@ -264,6 +264,7 @@ class TimeDisplay:
         self.screen.blit(self.background, (0,0))
         now = datetime.now(tz=self.tz)
         self.current_time = now.strftime("%H:%M")
+        self.time_sprite.update_text(now)
 
         if pygame.time.get_ticks() - self.phase_time > 5000:
             self.change_stock()
@@ -280,7 +281,9 @@ class TimeDisplay:
         def __init__(self, text, font, position, color, center=False):
             # defaults to the top left
             pygame.sprite.Sprite.__init__(self)
+            self.font = font
             self.text = text
+            self.color = color
             self.image = font.render(text, False, color)
             self.rect = self.image.get_rect()
 
@@ -288,6 +291,11 @@ class TimeDisplay:
                 self.rect.center = position
             else:
                 self.rect.topleft = position
+
+        def update_text(self, text):
+            self.text = text
+            self.image = self.font.render(text, False, self.color)
+            self.rect = self.image.get_rect()
 
     class image_sprite(pygame.sprite.Sprite):
         def __init__(self, image, position, center=False):
