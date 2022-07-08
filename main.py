@@ -153,6 +153,7 @@ def main():
                 program = display_programs[program_num]
                 program.start()
 
+
         #screen_sim.blit(pygame.transform.scale(screen_main, (256, 256)), (0, 0))
         image = Image.fromarray(pygame.surfarray.pixels3d(screen_main).swapaxes(1, 0))
         matrix.SetImage(image, 0, 0)
