@@ -54,8 +54,7 @@ def main():
 
     ### MAIN SCREEN, PROGRAMS, PYGAME ###
     pygame.init()
-    if SIM:
-        screen_sim = pygame.display.set_mode((WIDTH * 4, HEIGHT * 4))
+    screen_sim = pygame.display.set_mode((WIDTH * 4, HEIGHT * 4))
     screen_main = pygame.surface.Surface((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
     display_programs = []
@@ -78,6 +77,7 @@ def main():
 
     ### TIME PROGRAM ###
     # Stock wrapper setup
+    time.sleep(10)
     stock_names = ['TSLA', 'PLTR', 'MTCH', 'TSP']
     global temp, weather_image, stock_prices
     stocks = StockWrapper(stock_names)
