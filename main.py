@@ -11,6 +11,7 @@ from PIL import Image
 import os
 import threading
 import json
+import time
 
 # Settings
 SIM = False
@@ -53,7 +54,8 @@ def main():
 
     ### MAIN SCREEN, PROGRAMS, PYGAME ###
     pygame.init()
-    screen_sim = pygame.display.set_mode((WIDTH * 4, HEIGHT * 4))
+    if SIM:
+        screen_sim = pygame.display.set_mode((WIDTH * 4, HEIGHT * 4))
     screen_main = pygame.surface.Surface((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
     display_programs = []
@@ -64,8 +66,6 @@ def main():
     else:
         settings = read_settings_json(settings)
         print("Settings already exist, loading old values")
-
-
 
     ### IMAGE PROGRAM ###
     image_names = ["vibing_cat.bmp"]
@@ -78,6 +78,7 @@ def main():
 
     ### TIME PROGRAM ###
     # Stock wrapper setup
+    time.sleep(10)
     stock_names = ['TSLA', 'PLTR', 'MTCH', 'TSP']
     global temp, weather_image, stock_prices
     stocks = StockWrapper(stock_names)
@@ -152,15 +153,15 @@ def main():
                 program = display_programs[program_num]
                 program.start()
 
-        screen_sim.blit(pygame.transform.scale(screen_main, (256, 256)), (0, 0))
-        image = Image.fromarray(pygame.surfarray.pixels3d(screen_sim).swapaxes(1, 0))
+        #screen_sim.blit(pygame.transform.scale(screen_main, (256, 256)), (0, 0))
+        image = Image.fromarray(pygame.surfarray.pixels3d(screen_main).swapaxes(1, 0))
         matrix.SetImage(image, 0, 0)
-        
+
         # Display the screen
         # if SIM:
         #     screen_sim.blit(pygame.transform.scale(screen_main, (256, 256)), (0, 0))
         # else:
-        #     image = Image.fromarray(pygame.surfarray.pixels3d(screen_sim).swapaxes(1, 0))
+        #     image = Image.fromarray(pygame.surfarray.pixels3d(screen_main).swapaxes(1, 0))
         #     matrix.SetImage(image, 0, 0)
         
         pygame.display.flip()
