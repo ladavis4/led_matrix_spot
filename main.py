@@ -114,6 +114,7 @@ def main():
         options.rows = WIDTH
         options.cols = HEIGHT
         options.gpio_slowdown = 4
+        options.led_brightness = 20
         matrix = RGBMatrix(options=options)
 
     # Main loop
