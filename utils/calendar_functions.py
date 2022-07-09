@@ -56,9 +56,13 @@ class Calendar:
         event_times = []
 
         for event in events:
-            dt = datetime.strptime(event['start']['dateTime'], "%Y-%m-%dT%H:%M:%S%z" )
+            try:
+                dt = datetime.strptime(event['start']['dateTime'], "%Y-%m-%dT%H:%M:%S%z" )
+                event_times.append(dt.strftime("%H:%M"))
+            except: #Time is not provided with event, its just an all day event
+                event_times.append("23:59")
             event_summaries.append(event['summary'])
-            event_times.append(dt.strftime("%H:%M"))
+
 
         return event_times, event_summaries
 
