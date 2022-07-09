@@ -21,8 +21,13 @@ def splash():
         form_data = request.form
         for key, value in data.items():
             data[key] = False
+
         for key, value in form_data.items():
-            data[key] = value == 'true'
+            if key == 'slider_brightness':
+                data[key] = int(value)
+            else:
+                data[key] = value == 'true'
+
 
         with open('../temp/settings.json', 'w') as outfile:
             json.dump(data, outfile)
