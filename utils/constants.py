@@ -11,3 +11,5 @@ SPOTIFY_UPDATE_FREQ = 3  # seconds
 WEATHER_UPDATE_FREQ = 300  # seconds
 STOCKS_UPDATE_FREQ = 3600  # seconds
 STOCK_CHANGE_FREQ = 10  # seconds
+
+CHECK_SETTINGS_FREQ = 1000  # milliseconds

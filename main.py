@@ -123,10 +123,12 @@ def main():
     program = display_programs[program_num]
 
     t_settings = pygame.time.get_ticks()
+
+    ### MAIN LOOP ###
     while 1:
         #Check if the settings changed
         current_time = pygame.time.get_ticks()
-        if current_time - t_settings > 5000:
+        if current_time - t_settings > CHECK_SETTINGS_FREQ:
             t_settings = current_time
             # Apply the settings changes
             settings = read_settings_json(settings)
