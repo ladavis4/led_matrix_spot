@@ -172,9 +172,13 @@ def main():
 ### CALLBACK FUNCTIONS TO UPDATE GLOBAL INFORMATION ###
 def check_spotify(spotify):
     global spotify_flag, spotify_image
+    spotify.check_if_online()
     if spotify.is_online():
         spotify_image = spotify.get_current_img()
-        spotify_flag = True
+        if spotify_image is not None:
+            spotify_flag = True
+        else:
+            spotify_flag = False
     else:
         spotify_flag = False
     t_spot = threading.Timer(SPOTIFY_UPDATE_FREQ, check_spotify, args=[spotify])

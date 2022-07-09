@@ -19,22 +19,35 @@ class SpotifyWrapper:
         self.img = None
         self.current_song_name = None
 
-    def is_online(self):
+        self.online = False
+
+    def check_if_online(self):
         response = self.sp.currently_playing()
         if response is not None:
-            out = True
+            self.online = True
         else:
-            out = False
-        return out
+            self.online = False
 
-    def get_current_img(self):  # Function pulls tract number from census website given lat/lon.
-        response = self.sp.currently_playing()
-        self.current_song_name = response['item']['name']
-        url = response['item']['album']['images'][2]['url']
-        response = requests.get(url)
-        self.img = Image.open(BytesIO(response.content))
+    def is_online(self):
+        return self.online
 
-        return self.img
+    def get_current_img(self):
+        try:
+            response = self.sp.currently_playing()
+            if response is not None:
+                self.current_song_name = response['item']['name']
+                url = response['item']['album']['images'][2]['url']
+                response = requests.get(url)
+                self.img = Image.open(BytesIO(response.content))
+
+                self.online = True
+                return self.img
+            else:
+                self.online = False
+                return None
+        except:
+            print("EXCEPTION: Get current image failed")
+            return None
 
 
 if __name__ == "__main__":
