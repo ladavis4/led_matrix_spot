@@ -14,7 +14,7 @@ import json
 import time
 
 # Settings
-SIM = False
+SIM = True
 # Globals
 global temp, weather_image, stock_prices, spotify_flag, spotify_image  # Information updated from callbacks
 
