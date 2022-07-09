@@ -1,4 +1,6 @@
 import imp
+import sys
+
 from utils.spotify_functions import SpotifyWrapper
 from utils.calendar_functions import Calendar
 from utils.weather_functions import weatherAPI
@@ -14,7 +16,7 @@ import json
 import time
 
 # Settings
-SIM = False
+SIM = True
 # Globals
 global temp, weather_image, stock_prices, spotify_flag, spotify_image  # Information updated from callbacks
 
@@ -23,7 +25,7 @@ def write_settings_to_json(settings_obj, debug=False):
     """"
     Writes the custom settings object to a dictionary
     """
-    settings_dict={'button_img':settings_obj.show_image, 'button_time': settings_obj.show_time, 'button_cal':settings_obj.show_calendar, 'button_spot':settings_obj.show_spotify}
+    settings_dict={'button_img':settings_obj.show_image, 'button_time': settings_obj.show_time, 'button_cal':settings_obj.show_calendar, 'button_spot':settings_obj.show_spotify, 'slider_brightness':100}
     with open('temp/settings.json', 'w') as outfile:
         json.dump(settings_dict, outfile)
 
@@ -41,6 +43,7 @@ def read_settings_json(settings_obj, debug=False):
     settings_obj.show_time = data['button_time']
     settings_obj.show_calendar = data['button_cal']
     settings_obj.show_spotify = data['button_spot']
+    settings_obj.brightness = data['slider_brightness']
 
     if debug:
         print(f"Read settings", {data})
@@ -114,7 +117,7 @@ def main():
         options.rows = WIDTH
         options.cols = HEIGHT
         options.gpio_slowdown = 4
-        options.led_brightness = 20
+        options.brightness = settings.brightness
         matrix = RGBMatrix(options=options)
 
     # Main loop
@@ -131,6 +134,7 @@ def main():
         if current_time - t_settings > CHECK_SETTINGS_FREQ:
             t_settings = current_time
             # Apply the settings changes
+            old_brightness = settings.brightness
             settings = read_settings_json(settings)
             display_programs = []
             if settings.show_image:
@@ -140,6 +144,9 @@ def main():
             if settings.show_calendar:
                 display_programs.append(cal_disp)
             num_of_programs = len(display_programs) - 1
+
+            if old_brightness != settings.brightness:
+                sys.exit()
 
         if spotify_flag and settings.show_spotify:
             spot_disp.update(spotify_image)
