@@ -16,7 +16,7 @@ import json
 import time
 
 # Settings
-SIM = False
+SIM = True
 # Globals
 global temp, weather_image, stock_prices, spotify_flag, spotify_image  # Information updated from callbacks
 
@@ -69,11 +69,11 @@ def main():
         print("Settings already exist, loading old values")
 
     ### IMAGE PROGRAM ###
-    image_names = ["vibing_cat.bmp"]
+    image_names = os.listdir(os.path.join(os.getcwd(), "images"))
     image_path_list = []
     for name in image_names:
         image_path_list.append(os.path.join(os.getcwd(), "images", name))
-    image_disp = ImageDisplay(screen_main, image_path_list)
+    image_disp = ImageDisplay(screen_main, image_path_list, IMAGE_DISPLAY_TIME)
     if settings.show_image:
         display_programs.append(image_disp)
 
