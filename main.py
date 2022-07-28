@@ -1,13 +1,15 @@
 import imp
 import sys
 
+import google.auth.exceptions
+
 from utils.spotify_functions import SpotifyWrapper
 from utils.calendar_functions import Calendar
 from utils.weather_functions import weatherAPI
 from utils.constants import *
 from utils.settings_obj import Settings
 from utils.stock_functions import StockWrapper
-from display_programs import CalDisplay, TimeDisplay, SpotifyDisplay, ImageDisplay
+from display_programs import CalDisplay, TimeDisplay, SpotifyDisplay, ImageDisplay, ErrorDisplay
 import pygame
 from PIL import Image
 import os
@@ -16,7 +18,7 @@ import json
 import time
 
 # Settings
-SIM = False
+SIM = True
 # Globals
 global temp, weather_image, stock_prices, spotify_flag, spotify_image  # Information updated from callbacks
 
@@ -50,7 +52,12 @@ def read_settings_json(settings_obj, debug=False):
 
     return settings_obj
 
+
 def main():
+    # variables to catch errors and display them to screen
+    start_successful = True
+    error_strings = []
+
     if not SIM:
         from rgbmatrix import RGBMatrix, RGBMatrixOptions
 
@@ -80,36 +87,71 @@ def main():
     ### TIME PROGRAM ###
     # Stock wrapper setup
     time.sleep(1)
-    stock_names = ['TSLA', 'PLTR', 'MTCH', 'TSP']
-    global temp, weather_image, stock_prices
-    stocks = StockWrapper(stock_names)
-    stock_prices = None
-    update_stocks(stocks)
+    try:
+        stock_names = ['TSLA', 'PLTR', 'MTCH', 'TSP']
+        global temp, weather_image, stock_prices
+        stocks = StockWrapper(stock_names)
+        stock_prices = None
+        update_stocks(stocks)
+    except:
+        start_successful = False
+        error_strings.append("Stock API Failure")
+        settings.show_time = False
+        write_settings_to_json(settings)
+        print("There was an error with stock price API, turning off the time display")
+
+
     # Weather wrapper setup
-    city_name = 'Philadelphia'
-    weather = weatherAPI(city_name)
-    temp = None
-    weather_image = None
-    update_weather(weather)
-    time_disp = TimeDisplay(screen_main, weather_image, temp, stock_names, stock_prices)
-    if settings.show_time:
-        display_programs.append(time_disp)
+    try:
+        city_name = 'Philadelphia'
+        weather = weatherAPI(city_name)
+        temp = None
+        weather_image = None
+        update_weather(weather)
+        time_disp = TimeDisplay(screen_main, weather_image, temp, stock_names, stock_prices)
+        if settings.show_time:
+            display_programs.append(time_disp)
+    except:
+        start_successful = False
+        error_strings.append("Weather API Failure")
+        # Update the settings to not show the calendar
+        settings.show_time = False
+        write_settings_to_json(settings)
+        print("There was an error with weather API, turning off the time display")
+
 
     ### CALENDAR PROGRAM ###
-    calendar = Calendar(tz='US/Eastern')
-    times, events = calendar.get_today_events()
-    cal_disp = CalDisplay(screen_main, times, events)
-    if settings.show_calendar:
-        display_programs.append(cal_disp)
+    try:
+        calendar = Calendar(tz='US/Eastern')
+        times, events = calendar.get_today_events()
+        cal_disp = CalDisplay(screen_main, times, events)
+        if settings.show_calendar:
+            display_programs.append(cal_disp)
+    except google.auth.exceptions.RefreshError as e:
+        # Display error message
+        start_successful = False
+        error_strings.append("GCal Failure: Delete token.json and try again")
+        # Update the settings to not show the calendar
+        settings.show_calendar = False
+        write_settings_to_json(settings)
+        print("There was an error with GCal, turning off the calendar display")
 
     ### SPOTIFY PROGRAM ###
     # Only runs when I am playing music on spotify
-    spotify = SpotifyWrapper()
-    global spotify_flag, spotify_image
-    spotify_flag = False
-    spotify_image = None
-    check_spotify(spotify)
-    spot_disp = SpotifyDisplay(screen_main, spotify_image)
+    try:
+        spotify = SpotifyWrapper()
+        global spotify_flag, spotify_image
+        spotify_flag = False
+        spotify_image = None
+        check_spotify(spotify)
+        spot_disp = SpotifyDisplay(screen_main, spotify_image)
+    except:
+        start_successful = False
+        error_strings.append("Spotify Failure")
+        #Update settings
+        settings.show_spotify = False
+        write_settings_to_json(settings)
+        print("There was an error with spotify, turning off the spotify display")
 
     # Set up LED Matrix
     if not SIM:
@@ -126,6 +168,23 @@ def main():
     program = display_programs[program_num]
 
     t_settings = pygame.time.get_ticks()
+
+    ### Error Loop ###
+    if not start_successful:
+        error_disp = ErrorDisplay(screen_main, error_strings)
+        done = False
+        while not done:
+            done = error_disp.update()
+            # Display the screen
+            if SIM:
+                screen_sim.blit(pygame.transform.scale(screen_main, (256, 256)), (0, 0))
+            else:
+                image = Image.fromarray(pygame.surfarray.pixels3d(screen_main).swapaxes(1, 0))
+                matrix.SetImage(image, 0, 0)
+
+            pygame.display.flip()
+            pygame.event.pump()
+            clock.tick(10)
 
     ### MAIN LOOP ###
     while 1:
@@ -160,11 +219,6 @@ def main():
 
                 program = display_programs[program_num]
                 program.start()
-
-
-        #screen_sim.blit(pygame.transform.scale(screen_main, (256, 256)), (0, 0))
-        # image = Image.fromarray(pygame.surfarray.pixels3d(screen_main).swapaxes(1, 0))
-        # matrix.SetImage(image, 0, 0)
 
         #Display the screen
         if SIM:
