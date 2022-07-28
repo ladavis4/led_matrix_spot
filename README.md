@@ -20,12 +20,11 @@ You should now be able to run the "main.py" file in the home of the directory an
 
 ## Making the Program Run on Launch
 To have the program run on launch, you will need to set up a systemd service. An example service file is provided in the "/services" directory. The steps for setting up launch on boot are: 
-- Take "/services/led-matrix.service and led-app.service" and move them to "lib/systemd/system" 
+- Take "/services/led-matrix.service" and move it to "lib/systemd/system" 
 - Reload systemctl and add the service to start on boot
 ```bash
 sudo systemctl daemon-reload
 sudo systemctl enable led-matrix.service
-sudo systemctl enable led-app.service
 ```
 If you want to test that it works without rebooting the pi, run: 
 ```bash
