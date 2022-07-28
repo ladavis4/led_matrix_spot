@@ -350,3 +350,91 @@ class SpotifyDisplay:
         self.screen.blit(self.image, (0, 0))
 
 
+class ErrorDisplay:
+    def __init__(self, screen, strings):
+        self.done = False
+
+        # flags
+        self.phase = 0  # keeps track of the phase of the display sequence
+        self.phase_done = False
+        self.timer_start = True
+
+        # timers
+        self.phase_time = pygame.time.get_ticks()
+
+        # display setup
+        self.screen = screen
+        self.font_title = pygame.font.Font(r"VeraMono.ttf", 12)
+        self.font_title.underline = True
+        self.font = pygame.font.Font(r"VeraMono.ttf", 10)
+        self.sprites = pygame.sprite.Group()
+        self.sprites.add(self.TextSprite("Errors", self.font_title, (WIDTH/2, 6), RED, center=True))
+
+        font_height = self.font.size('A')[1]
+        x = 0
+        y = 18
+
+        for i in range(len(strings)):
+            self.sprites.add(self.TextSprite(strings[i], self.font, (x, y), RED))
+            y += font_height
+
+    def update(self):
+        self.screen.fill(BLACK)
+        if self.phase == 0:
+            if pygame.time.get_ticks() - self.phase_time > 5000:
+                self.phase = 1
+
+        elif self.phase == 1:
+            if self.check_done_moving():
+                self.phase = 2
+            self.sprites.update()
+
+        elif self.phase == 2:
+            if self.timer_start:
+                self.phase_time = pygame.time.get_ticks()
+                self.timer_start = False
+
+            if pygame.time.get_ticks() - self.phase_time > 3000:
+                self.done = True
+
+        # draw to screen
+        self.sprites.draw(self.screen)
+        return self.done
+
+    def check_done_moving(self):
+        # assume done until otherwise
+        done = True
+        for sprite in self.sprites:
+            if sprite.rect.right > WIDTH:
+                done = False
+                break
+        return done
+
+    class TextSprite(pygame.sprite.Sprite):
+        def __init__(self, text, font, position, color, center=False):
+            # defaults to the top left
+            pygame.sprite.Sprite.__init__(self)
+            self.font = font
+            self.text = text
+            self.color = color
+            self.position = position
+            self.center = center
+
+            self.image = font.render(text, False, color)
+            self.rect = self.image.get_rect()
+
+            if center:
+                self.rect.center = position
+            else:
+                self.rect.topleft = position
+
+            self.needs_move = False
+
+            if self.rect.right > WIDTH:
+                self.needs_move = True
+
+        def update(self):
+            self.rect.move_ip(-2, 0)
+
+
+
