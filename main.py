@@ -1,4 +1,3 @@
-import imp
 import sys
 
 import google.auth.exceptions
@@ -9,6 +8,7 @@ from utils.weather_functions import weatherAPI
 from utils.constants import *
 from utils.settings_obj import Settings
 from utils.stock_functions import StockWrapper
+from utils.drive_functions import download_files
 from display_programs import CalDisplay, TimeDisplay, SpotifyDisplay, ImageDisplay, ErrorDisplay
 import pygame
 from PIL import Image
@@ -18,7 +18,8 @@ import json
 import time
 
 # Settings
-SIM = False
+SIM = True
+
 # Globals
 global temp, weather_image, stock_prices, spotify_flag, spotify_image  # Information updated from callbacks
 
@@ -76,6 +77,8 @@ def main():
         print("Settings already exist, loading old values")
 
     ### IMAGE PROGRAM ###
+    # Download images from google drive into images folder
+    download_files(folder_id=DRIVE_IMAGE_FOLDER_ID, local_folder_path=os.path.join(os.getcwd(), "images"))
     image_names = os.listdir(os.path.join(os.getcwd(), "images"))
     image_path_list = []
     for name in image_names:

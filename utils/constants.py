@@ -1,4 +1,3 @@
-
 # Display settings
 WIDTH = 64
 HEIGHT = 64
@@ -10,7 +9,7 @@ STOCKS_UPDATE_FREQ = 3600  # seconds
 STOCK_CHANGE_FREQ = 10  # seconds
 
 # Display program settings
-IMAGE_DISPLAY_TIME = 10  # seconds
+IMAGE_DISPLAY_TIME = 10  # seconds per image on screen
 
 # Other
 CHECK_SETTINGS_FREQ = 1000  # milliseconds
@@ -20,3 +19,5 @@ BLACK = (0, 0, 0)
 BLUE = (34, 95, 186)
 ORANGE = (230, 112, 39)
 RED = (235, 64, 52)
+
+DRIVE_IMAGE_FOLDER_ID = '1PRMe_4aRs3K1INoxURx7EUKPkkU0C6Mq'

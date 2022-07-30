@@ -21,17 +21,17 @@ class Calendar:
         # If modifying these scopes, delete the file token.json.
         SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
         creds = None
-        if os.path.exists('token.json'):
-            creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+        if os.path.exists('credentials/calendar_token.json'):
+            creds = Credentials.from_authorized_user_file('credentials/calendar_token.json', SCOPES)
         if not creds or not creds.valid:
             if creds and creds.expired and creds.refresh_token:
                 creds.refresh(Request())
             else:
                 flow = InstalledAppFlow.from_client_secrets_file(
-                    'credentials.json', SCOPES)
+                    'credentials/calendar_credentials.json', SCOPES)
                 creds = flow.run_local_server(port=0)
             # Save the credentials for the next run
-            with open('token.json', 'w') as token:
+            with open('credentials/calendar_token.json', 'w') as token:
                 token.write(creds.to_json())
         self.service = build('calendar', 'v3', credentials=creds)
         self.tz = pytz.timezone(tz)
