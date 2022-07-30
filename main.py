@@ -78,7 +78,10 @@ def main():
 
     ### IMAGE PROGRAM ###
     # Download images from google drive into images folder
-    download_files(folder_id=DRIVE_IMAGE_FOLDER_ID, local_folder_path=os.path.join(os.getcwd(), "images"))
+    try:
+        download_files(folder_id=DRIVE_IMAGE_FOLDER_ID, local_folder_path=os.path.join(os.getcwd(), "images"))
+    except:
+        print("Failed to download new image files")
     image_names = os.listdir(os.path.join(os.getcwd(), "images"))
     image_path_list = []
     for name in image_names:

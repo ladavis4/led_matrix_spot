@@ -21,3 +21,4 @@ ORANGE = (230, 112, 39)
 RED = (235, 64, 52)
 
 DRIVE_IMAGE_FOLDER_ID = '1PRMe_4aRs3K1INoxURx7EUKPkkU0C6Mq'
+SCOPES = ['https://www.googleapis.com/auth/drive.readonly', 'https://www.googleapis.com/auth/calendar.readonly']
