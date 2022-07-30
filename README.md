@@ -35,4 +35,8 @@ If something goes wrong and you need to check the logs of the program, run:
 journalctl -u led-matrix.service -b
 ```
 
+# Functionality
+**Change images from google drive** 
+- In the "utils/constants" file, change the id of DRIVE_IMAGE_FOLDER_ID. Any files that are placed in this google drive folder will be downloaded locally to the pi and displayed on the screen. 
+
 
