@@ -8,8 +8,8 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
 
+from utils.constants import SCOPES
 
 def local_to_utc(local_dt):
     return local_dt.astimezone(pytz.utc)
@@ -19,19 +19,18 @@ class Calendar:
     def __init__(self, tz='US/Pacific'):
         # Init credentials
         # If modifying these scopes, delete the file token.json.
-        SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
         creds = None
-        if os.path.exists('token.json'):
-            creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+        if os.path.exists('credentials/token.json'):
+            creds = Credentials.from_authorized_user_file('credentials/token.json', SCOPES)
         if not creds or not creds.valid:
             if creds and creds.expired and creds.refresh_token:
                 creds.refresh(Request())
             else:
                 flow = InstalledAppFlow.from_client_secrets_file(
-                    'credentials.json', SCOPES)
+                    'credentials/credentials.json', SCOPES)
                 creds = flow.run_local_server(port=0)
             # Save the credentials for the next run
-            with open('token.json', 'w') as token:
+            with open('credentials/token.json', 'w') as token:
                 token.write(creds.to_json())
         self.service = build('calendar', 'v3', credentials=creds)
         self.tz = pytz.timezone(tz)

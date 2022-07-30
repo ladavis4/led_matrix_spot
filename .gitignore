@@ -130,6 +130,5 @@ dmypy.json
 
 /rpi-rgb-led-matrix
 .idea/
-credentials.json
-token.json
+credentials/
 
