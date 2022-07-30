@@ -7,7 +7,7 @@
 To use this application, you must have OAuth client ID credentials provided by the Google cloud platform. 
 - Open the Google Cloud Console
 - From the top left go to APIs & Services > Credentials
-- If an application is already created, then download the credentials and save them as "credentials.json" in the main directory 
+- If an application is already created, then download the credentials and save them as "credentials.json". Create a "credentials/" folder in the root directory. Place the "credentials.json" in that folder. 
 - If an application is not created, create an application with the proper permissions
 For more guidance follow this [link](https://developers.google.com/workspace/guides/create-credentials)
 
