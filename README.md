@@ -14,8 +14,8 @@ For more guidance follow this [link](https://developers.google.com/workspace/gui
 **Set up spotify auth**
 - Go to [this link](https://developer.spotify.com/dashboard) to get the client ID and secret key
 - Create a file named "spotify_credentials.json" in the credentials folder
-- Add the information into the "cid" and "secret" fields
-- 
+- Add the information into the "cid" and "secret" fields of a json and save
+  
 **Install Raspberry Pi Matrix Software**
 - Use the script provided in [this guide](https://learn.adafruit.com/adafruit-rgb-matrix-bonnet-for-raspberry-pi/driving-matrices) to install the setup software for running the led matrix bonnet
 - You should now be able to run any of the example scripts provided in the bin folder of the repository. Just remember to specify the matrix size and GPIO slowdown. 
