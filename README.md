@@ -15,6 +15,7 @@ For more guidance follow this [link](https://developers.google.com/workspace/gui
 - Go to [this link](https://developer.spotify.com/dashboard) to get the client ID and secret key
 - Create a file named "spotify_credentials.json" in the credentials folder
 - Add the information into the "cid" and "secret" fields of a json and save
+- You'll probably be launched into the spotify browser in order to complete login
   
 **Install Raspberry Pi Matrix Software**
 - Use the script provided in [this guide](https://learn.adafruit.com/adafruit-rgb-matrix-bonnet-for-raspberry-pi/driving-matrices) to install the setup software for running the led matrix bonnet
@@ -44,4 +45,6 @@ journalctl -u led-matrix.service -b
 **Change images from google drive** 
 - In the "utils/constants" file, change the id of DRIVE_IMAGE_FOLDER_ID. Any files that are placed in this google drive folder will be downloaded locally to the pi and displayed on the screen. 
 
-
+**Change settings from your phone** 
+- Before or after launching the "main.py" script, launch the "app.py" script
+- You can now go to 192.168.0.11:500 on your phone to change the settings of the screen (as long as your are on the same wifi)
