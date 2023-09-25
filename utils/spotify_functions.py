@@ -1,15 +1,21 @@
+import os
+
 import spotipy
 from PIL import Image
 import requests
 from io import BytesIO
 from spotipy import SpotifyClientCredentials, SpotifyOAuth
+import json
 
 
 
 class SpotifyWrapper:
-    def __init__(self):
-        self.CID = '1fba714b4aab4063ad674ccf88a75a95'
-        self.SECRET = 'd474333d8628450da05a913e8c3e0641'
+    def __init__(self, debug=False):
+        self.CID = None
+        self.SECRET = None
+
+        self.read_credentials()
+
         self.scope = "user-read-currently-playing"
         self.username = "ldavisiv2017"
         self.redirect_uri = "http://localhost:8888/callback/"
@@ -49,9 +55,23 @@ class SpotifyWrapper:
             print("EXCEPTION: Get current image failed")
             return None
 
+    def read_credentials(self, credential_path ='credentials/spotify_credentials.json', debug=False):
+        with open(os.path.join(os.getcwd(), credential_path)) as json_file:
+            data = json.load(json_file)
+
+        self.CID = data['cid']
+        self.SECRET = data['secret']
+
+        if debug:
+            print(f"Read settings", {data})
+
+        return None
+
 
 if __name__ == "__main__":
-    caller = SpotifyWrapper()
+    caller = SpotifyWrapper(debug=True)
+    out = caller.check_if_online()
+    print(out)
     img = caller.get_current_img()
     img.show()
 

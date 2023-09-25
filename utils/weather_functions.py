@@ -6,16 +6,24 @@ from PIL import Image
 
 
 class weatherAPI():
-    def __init__(self, city_name):
+    def __init__(self, city_name=None, lat=None, long=None):
         self.KEY = '886705b4c1182eb1c69f28eb8c520e20'
         self.city_name = city_name
+        self.lat = lat
+        self.long = long
         self.temp = 0
         self.icon_name = ''
         self.data = 0
 
     def get_temp(self):  # Function pulls tract number from census website given lat/lon.
-        string = 'https://api.openweathermap.org/data/2.5/weather?q=' + self.city_name + '&appid=' + self.KEY + "&units=imperial"
-        #print(string)
+        if self.city_name:
+            string = 'https://api.openweathermap.org/data/2.5/weather?q=' + self.city_name + '&appid=' + self.KEY + "&units=imperial"
+        elif self.lat and self.long:
+            string = 'https://api.openweathermap.org/data/2.5/weather?lat=' + str(self.lat) + '&lon=' + str(self.long) + '&appid=' + self.KEY + "&units=imperial"
+        else:
+            print("WEATHER LOCATION FAILURE")
+
+        #https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&dt={time}&appid={API key}
 
         response = urllib.request.urlopen(string)
         self.data = json.load(response)
