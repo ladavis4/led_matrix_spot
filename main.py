@@ -79,8 +79,7 @@ def main():
 
     # Weather wrapper setup
     try:
-        city_name = 'Philadelphia'
-        weather = weatherAPI(city_name)
+        weather = weatherAPI(lat=26.385198795329615, long=127.85697468385573)
         temp = None
         weather_image = None
         update_weather(weather)
