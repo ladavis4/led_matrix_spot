@@ -9,7 +9,6 @@ from utils.constants import *
 from utils.settings_obj import Settings
 from utils.stock_functions import StockWrapper
 from utils.drive_functions import download_files
-from utils.helper_functions import write_settings_to_json, read_settings_json
 from display_programs import CalDisplay, TimeDisplay, SpotifyDisplay, ImageDisplay, ErrorDisplay
 import pygame
 from PIL import Image
@@ -21,7 +20,7 @@ import time
 SIM = True
 
 # Globals
-global temp, weather_image, stock_prices, spotify_flag, spotify_image  # Information updated from callbacks
+global temp, weather_image, stock_prices, spotify_flag, spotify_image, feels_like, humidity  # Information updated from callbacks
 
 
 def main():
@@ -41,9 +40,9 @@ def main():
 
     settings = Settings()
     if not os.path.exists('temp/settings.json'):
-        write_settings_to_json(settings, debug=True)
+        settings.write_settings_to_json(debug=True)
     else:
-        settings = read_settings_json(settings)
+        settings.read_settings_json()
         print("Settings already exist, loading old values")
 
     ### IMAGE PROGRAM ###
@@ -73,17 +72,20 @@ def main():
         start_successful = False
         error_strings.append("Stock API Failure")
         settings.show_time = False
-        write_settings_to_json(settings)
+        settings.write_settings_to_json()
         print("There was an error with stock price API, turning off the time display")
 
 
     # Weather wrapper setup
     try:
-        weather = weatherAPI(lat=26.385198795329615, long=127.85697468385573)
+        weather = weatherAPI(lat=settings.lat, long=settings.long, city_name=settings.city_name)
         temp = None
         weather_image = None
+        feels_like = None
+        temp = None
         update_weather(weather)
-        time_disp = TimeDisplay(screen_main, weather_image, temp, stock_names, stock_prices)
+        time_disp = TimeDisplay(screen_main, weather_image, temp, stock_names, stock_prices, humidity=humidity,
+                                feels_like=feels_like)
         if settings.show_time:
             display_programs.append(time_disp)
     except:
@@ -91,7 +93,7 @@ def main():
         error_strings.append("Weather API Failure")
         # Update the settings to not show the calendar
         settings.show_time = False
-        write_settings_to_json(settings)
+        settings.write_settings_to_json()
         print("There was an error with weather API, turning off the time display")
 
 
@@ -108,7 +110,7 @@ def main():
         error_strings.append("GCal Failure: Delete token.json and try again")
         # Update the settings to not show the calendar
         settings.show_calendar = False
-        write_settings_to_json(settings)
+        settings.write_settings_to_json()
         print("There was an error with GCal, turning off the calendar display")
 
     ### SPOTIFY PROGRAM ###
@@ -125,7 +127,7 @@ def main():
         error_strings.append("Spotify Failure")
         #Update settings
         settings.show_spotify = False
-        write_settings_to_json(settings)
+        settings.write_settings_to_json()
         print("There was an error with spotify, turning off the spotify display")
 
     # Set up LED Matrix
@@ -169,7 +171,7 @@ def main():
             t_settings = current_time
             # Apply the settings changes
             old_brightness = settings.brightness
-            settings = read_settings_json(settings)
+            settings.read_settings_json()
             display_programs = []
             if settings.show_image:
                 display_programs.append(image_disp)
@@ -233,8 +235,8 @@ def update_stocks(stocks):
 
 
 def update_weather(weather):
-    global temp, weather_image
-    temp = weather.get_temp()
+    global temp, weather_image, feels_like, humidity
+    temp, humidity, feels_like = weather.get_temp()
     weather_image = weather.get_icon_image()
     t_weather = threading.Timer(WEATHER_UPDATE_FREQ, update_weather, args=[weather])
     t_weather.daemon = True

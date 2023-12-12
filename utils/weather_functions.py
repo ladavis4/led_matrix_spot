@@ -11,12 +11,15 @@ class weatherAPI():
         self.city_name = city_name
         self.lat = lat
         self.long = long
-        self.temp = 0
         self.icon_name = ''
-        self.data = 0
+
+        self.data = None
+        self.temp = 0
+        self.humidity = 0
+        self.feels_like = 0
 
     def get_temp(self):  # Function pulls tract number from census website given lat/lon.
-        if self.city_name:
+        if self.city_name and self.city_name != '':
             string = 'https://api.openweathermap.org/data/2.5/weather?q=' + self.city_name + '&appid=' + self.KEY + "&units=imperial"
         elif self.lat and self.long:
             string = 'https://api.openweathermap.org/data/2.5/weather?lat=' + str(self.lat) + '&lon=' + str(self.long) + '&appid=' + self.KEY + "&units=imperial"
@@ -29,7 +32,9 @@ class weatherAPI():
         self.data = json.load(response)
         self.temp = self.data['main']['temp']
         self.icon_name = self.data['weather'][0]['icon']
-        return round(self.temp)
+        self.humidity = self.data['main']['humidity']
+        self.feels_like = self.data['main']['feels_like']
+        return round(self.temp), round(self.humidity), round(self.feels_like)
 
     def get_icon_image(self):
         url = "http://openweathermap.org/img/wn/" + self.icon_name + "@2x.png"

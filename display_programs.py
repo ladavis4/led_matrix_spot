@@ -2,7 +2,7 @@ import pygame
 from utils.constants import *
 from datetime import datetime
 import pytz
-
+from tzlocal import get_localzone
 
 class ImageDisplay:
     def __init__(self, screen, image_path_list, len_of_display=5):
@@ -204,7 +204,7 @@ class CalDisplay:
                 break
 
 class TimeDisplay:
-    def __init__(self, screen, temp_image, temp, stock_names, stock_prices, background_path=None, tz='US/Eastern'):
+    def __init__(self, screen, temp_image, temp, stock_names, stock_prices, feels_like=None, humidity=None, background_path=None):
         self.done = False
 
         self.screen = screen
@@ -220,7 +220,7 @@ class TimeDisplay:
         self.num_phases = len(stock_names)
 
         # time
-        self.tz = pytz.timezone(tz)
+        self.tz = get_localzone()
         self.current_time = datetime.now(tz=self.tz).strftime("%H:%M")
         self.time_sprite = self.text_sprite(self.current_time, self.font_time, (WIDTH/2, HEIGHT/2), WHITE, center=True)
         self.sprites.add(self.time_sprite)

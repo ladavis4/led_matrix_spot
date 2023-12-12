@@ -19,12 +19,17 @@ def splash():
         return render_template('form.html', data=data)
     if request.method == 'POST':
         form_data = request.form
+
         for key, value in data.items():
             data[key] = False
 
         for key, value in form_data.items():
             if key == 'slider_brightness':
                 data[key] = int(value)
+            elif key == 'city_name':
+                data[key] = value
+            elif key == 'lat' or key == 'long':
+                data[key] = float(value)
             else:
                 data[key] = value == 'true'
 
