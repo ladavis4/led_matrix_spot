@@ -79,13 +79,9 @@ def main():
     # Weather wrapper setup
     try:
         weather = weatherAPI(lat=settings.lat, long=settings.long, city_name=settings.city_name)
-        temp = None
-        weather_image = None
-        feels_like = None
-        temp = None
         update_weather(weather)
         time_disp = TimeDisplay(screen_main, weather_image, temp, stock_names, stock_prices, humidity=humidity,
-                                feels_like=feels_like)
+                                feels_like=feels_like, option=1)
         if settings.show_time:
             display_programs.append(time_disp)
     except:
@@ -139,12 +135,10 @@ def main():
         options.brightness = settings.brightness
         matrix = RGBMatrix(options=options)
 
-    # Main loop
-    program_num = 0
-    num_of_programs = len(display_programs) - 1
-    program = display_programs[program_num]
-
-    t_settings = pygame.time.get_ticks()
+    # Check to make sure at least one display is turned on
+    if not settings.show_spotify and not settings.show_time and not settings.show_calendar and not settings.show_image:
+        start_successful = False
+        error_strings.append("No screen activated!")
 
     ### Error Loop ###
     if not start_successful:
@@ -163,6 +157,12 @@ def main():
             pygame.event.pump()
             clock.tick(10)
 
+    # Main loop
+    program_num = 0
+    num_of_programs = len(display_programs) - 1
+    program = display_programs[program_num]
+
+    t_settings = pygame.time.get_ticks()
     ### MAIN LOOP ###
     while 1:
         # check if the settings changed
