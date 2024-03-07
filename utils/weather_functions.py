@@ -7,7 +7,7 @@ from PIL import Image
 
 class weatherAPI():
     def __init__(self, city_name=None, lat=None, long=None):
-        self.KEY = '886705b4c1182eb1c69f28eb8c520e20'
+        self.KEY = '56615ef4e1e5b3e7f86b6b44363bfa0b'
         self.city_name = city_name
         self.lat = lat
         self.long = long

@@ -50,7 +50,7 @@ def main():
     try:
         download_files(folder_id=DRIVE_IMAGE_FOLDER_ID, local_folder_path=os.path.join(os.getcwd(), "images"))
     except:
-        print("Failed to download new image files")
+        print("Failed to download new image files - try deleting token.json")
     image_names = os.listdir(os.path.join(os.getcwd(), "images"))
     image_path_list = []
     for name in image_names:

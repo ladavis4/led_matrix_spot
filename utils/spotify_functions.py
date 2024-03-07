@@ -18,7 +18,7 @@ class SpotifyWrapper:
 
         self.scope = "user-read-currently-playing"
         self.username = "ldavisiv2017"
-        self.redirect_uri = "http://localhost:8888/callback/"
+        self.redirect_uri = "https://localhost:8888/callback/"
 
         self.sp = spotipy.Spotify(auth_manager=SpotifyOAuth(redirect_uri=self.redirect_uri, client_secret=self.SECRET,
                                                             client_id=self.CID, scope=self.scope))
