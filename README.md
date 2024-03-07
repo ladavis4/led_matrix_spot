@@ -41,6 +41,11 @@ If something goes wrong and you need to check the logs of the program, run:
 journalctl -u led-matrix.service -b
 ```
 
+# Debugging Points
+- For weather, ensure that the API key is up to date.
+- For spotify, delete the cache file in the root folder. If that doesn't work, get a new api key from the spotify website. Make sure you have a "spotify_credentials.json" in the credentials folder. 
+- For Google, delete the token.json in the credentials folder. 
+
 # Functionality
 **Change images from google drive** 
 - In the "utils/constants" file, change the id of DRIVE_IMAGE_FOLDER_ID. Any files that are placed in this google drive folder will be downloaded locally to the pi and displayed on the screen. 
