@@ -19,6 +19,7 @@ For more guidance follow this [link](https://developers.google.com/workspace/gui
   
 **Install Raspberry Pi Matrix Software**
 - Use the script provided in [this guide](https://learn.adafruit.com/adafruit-rgb-matrix-bonnet-for-raspberry-pi/driving-matrices) to install the setup software for running the led matrix bonnet
+- Make sure to move the installed folder into the "main" folder for the led respository
 - You should now be able to run any of the example scripts provided in the bin folder of the repository. Just remember to specify the matrix size and GPIO slowdown. 
 
 **Test That It Works** 
