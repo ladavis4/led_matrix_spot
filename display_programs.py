@@ -204,14 +204,21 @@ class CalDisplay:
                 break
 
 class TimeDisplay:
-    def __init__(self, screen, temp_image, temp, stock_names, stock_prices, feels_like=None, humidity=None, background_path=None):
-        self.done = False
+    def __init__(self, screen, temp_image, temp, stock_names, stock_prices, feels_like=None, humidity=None,
+                 background_path=None, option=0):
+        """"
+        options: 0 - Display stocks
+                 1 - Display humidity
 
+        """
+        self.done = False
+        self.option = option
         self.screen = screen
         # render all the text and add to the pygame sprites
         self.font_time = pygame.font.Font(r"VeraMono.ttf", 20)
         self.font_stocks = pygame.font.Font(r"VeraMono.ttf", 10)
         self.font_temp = pygame.font.Font(r"VeraMono.ttf", 14)
+        self.font_humid = pygame.font.Font(r"VeraMono.ttf", 12)
         self.sprites = pygame.sprite.Group()
 
         # timers
@@ -226,19 +233,27 @@ class TimeDisplay:
         self.sprites.add(self.time_sprite)
 
         # stocks
-        self.stock_names = stock_names
-        self.stock_prices = stock_prices
-        self.disp_stock_num = 0
-        self.stock_sprite = self.text_sprite(f"{self.stock_names[self.disp_stock_num]} {self.stock_prices[self.disp_stock_num]}", self.font_stocks, (WIDTH / 2, 8), WHITE, center=True)
-        self.sprites.add(self.stock_sprite)
+        if option == 0:
+            self.stock_names = stock_names
+            self.stock_prices = stock_prices
+            self.disp_stock_num = 0
+            self.stock_sprite = self.text_sprite(f"{self.stock_names[self.disp_stock_num]} {self.stock_prices[self.disp_stock_num]}", self.font_stocks, (WIDTH / 2, 8), WHITE, center=True)
+            self.sprites.add(self.stock_sprite)
 
         # weather
         self.temp = str(temp)
+        self.humid = str(humidity)
+        self.feels = str(feels_like)
         self.temp_sprite = self.text_sprite(self.temp + "F", self.font_temp, (WIDTH/4, HEIGHT*7/8), WHITE, center=True)
         self.sprites.add(self.temp_sprite)
         self.temp_image = temp_image
         self.temp_image_sprite = self.image_sprite(self.temp_image, (WIDTH*3/4, 54), center=True)
         self.sprites.add(self.temp_image_sprite)
+        if option == 1:
+            self.humid_sprite = self.text_sprite(self.humid + "%", self.font_temp, (WIDTH/4, 8), WHITE, center=True)
+            self.feels_sprite = self.text_sprite(self.feels + "F", self.font_temp, (WIDTH*3/4, 8), WHITE, center=True)
+            self.sprites.add(self.humid_sprite)
+            self.sprites.add(self.feels_sprite)
 
         # background
         if background_path:
@@ -266,8 +281,10 @@ class TimeDisplay:
         self.current_time = now.strftime("%H:%M")
         self.time_sprite.update_text(self.current_time)
 
-        if pygame.time.get_ticks() - self.phase_time > 5000:
-            self.change_stock()
+        if self.option == 0:
+            if pygame.time.get_ticks() - self.phase_time > 5000:
+                self.change_stock()
+
 
         if pygame.time.get_ticks() - self.start_time > 40000:
             self.done = True
