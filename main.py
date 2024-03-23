@@ -17,7 +17,7 @@ import threading
 import time
 
 # Settings
-SIM = True
+SIM = False
 
 # Globals
 global temp, weather_image, stock_prices, spotify_flag, spotify_image, feels_like, humidity  # Information updated from callbacks

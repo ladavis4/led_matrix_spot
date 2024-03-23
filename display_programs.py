@@ -3,6 +3,7 @@ from utils.constants import *
 from datetime import datetime
 import pytz
 from tzlocal import get_localzone
+import os
 
 class ImageDisplay:
     def __init__(self, screen, image_path_list, len_of_display=5):
@@ -19,10 +20,15 @@ class ImageDisplay:
         self.DISPLAY_TIME = len_of_display * 1000  # Convert to ms
 
         self.phase_time = pygame.time.get_ticks()
-        self.image = pygame.image.load(image_path_list[self.image_num]).convert()
-        self.image = pygame.transform.scale(self.image, (WIDTH, HEIGHT))
-        self.screen.blit(self.image, (0, 0))
-
+        print(image_path_list[self.image_num])
+        
+        #load images
+        self.images = []
+        for name in image_path_list:
+            image = pygame.image.load(name).convert()
+            image = pygame.transform.scale(image, (WIDTH, HEIGHT))
+            self.images.append(image)
+        self.screen.blit(self.images[self.image_num], (0, 0))
         self.image_path_list = image_path_list
 
     def update(self):
@@ -36,19 +42,13 @@ class ImageDisplay:
         if self.image_num > self.max_image_num:
             self.done = True
         else:
-            self.image = pygame.image.load(self.image_path_list[self.image_num])
-            self.image = pygame.transform.scale(self.image, (WIDTH, HEIGHT))
-            self.image = self.image.convert()
-
-            self.screen.blit(self.image, (0, 0))
+            self.screen.blit(self.images[self.image_num], (0, 0))
 
     def start(self):
         self.done = False
         self.image_num = 0
         self.phase_time = pygame.time.get_ticks()
-        self.image = pygame.image.load(self.image_path_list[self.image_num]).convert()
-        self.image = pygame.transform.scale(self.image, (WIDTH, HEIGHT))
-        self.screen.blit(self.image, (0, 0))
+        self.screen.blit(self.images[self.image_num], (0, 0))
 
 
 
