@@ -26,7 +26,7 @@ You should now be able to run the "main.py" file in the home of the directory an
 
 ## Making the Program Run on Launch
 To have the program run on launch, you will need to set up a systemd service. An example service file is provided in the "/services" directory. The steps for setting up launch on boot are: 
-- Take "/services/led-matrix.service" and move it to "lib/systemd/system" 
+- Take "/services/led-matrix.service" and "/services/led-app.service" and move them to "lib/systemd/system" 
 - Reload systemctl and add the service to start on boot
 ```bash
 sudo systemctl daemon-reload
@@ -52,4 +52,4 @@ journalctl -u led-matrix.service -b
 
 **Change settings from your phone** 
 - Before or after launching the "main.py" script, launch the "app.py" script
-- You can now go to 192.168.0.11:500 on your phone to change the settings of the screen (as long as your are on the same wifi)
+- You can now go to (IP.address.of.pi:500) on your phone to change the settings of the screen (as long as your are on the same wifi)
