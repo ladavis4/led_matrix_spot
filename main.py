@@ -20,7 +20,7 @@ import time
 SIM = False
 
 # Globals
-global temp, weather_image, stock_prices, spotify_flag, spotify_image, feels_like, humidity  # Information updated from callbacks
+global spotify_flag, spotify_image  # Information updated from callbacks
 
 
 def main():
@@ -63,11 +63,8 @@ def main():
     # Stock wrapper setup
     time.sleep(1)
     try:
-        stock_names = ['TSLA', 'PLTR', 'MTCH', 'TSP']
         global temp, weather_image, stock_prices
-        stocks = StockWrapper(stock_names)
         stock_prices = None
-        update_stocks(stocks)
     except:
         start_successful = False
         error_strings.append("Stock API Failure")
@@ -78,10 +75,8 @@ def main():
 
     # Weather wrapper setup
     try:
-        weather = weatherAPI(lat=settings.lat, long=settings.long, city_name=settings.city_name)
-        update_weather(weather)
-        time_disp = TimeDisplay(screen_main, weather_image, temp, stock_names, stock_prices, humidity=humidity,
-                                feels_like=feels_like, option=1)
+        stock_names = ['TSLA', 'PLTR', 'MTCH', 'TSP']
+        time_disp = TimeDisplay(screen_main, settings.lat, settings.long, stock_names, option=1)
         if settings.show_time:
             display_programs.append(time_disp)
     except:
@@ -186,7 +181,6 @@ def main():
 
         if spotify_flag and settings.show_spotify:
             spot_disp.update(spotify_image)
-
         else:
             done = program.update()
             if done:
@@ -224,25 +218,6 @@ def check_spotify(spotify):
     t_spot = threading.Timer(SPOTIFY_UPDATE_FREQ, check_spotify, args=[spotify])
     t_spot.daemon = True
     t_spot.start()
-
-
-def update_stocks(stocks):
-    global stock_prices
-    stock_prices = stocks.all_stock_prices()
-    t_stock = threading.Timer(STOCKS_UPDATE_FREQ, update_stocks, args=[stocks])
-    t_stock.daemon = True
-    t_stock.start()
-
-
-def update_weather(weather):
-    global temp, weather_image, feels_like, humidity
-    temp, humidity, feels_like = weather.get_temp()
-    weather_image = weather.get_icon_image()
-    t_weather = threading.Timer(WEATHER_UPDATE_FREQ, update_weather, args=[weather])
-    t_weather.daemon = True
-    t_weather.start()
-
-
 
 if __name__ == "__main__":
     main()

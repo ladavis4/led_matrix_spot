@@ -4,6 +4,9 @@ from datetime import datetime
 import pytz
 from tzlocal import get_localzone
 import os
+from utils.weather_functions import weatherAPI
+from utils.stock_functions import StockWrapper
+
 
 class ImageDisplay:
     def __init__(self, screen, image_path_list, len_of_display=5):
@@ -49,8 +52,6 @@ class ImageDisplay:
         self.image_num = 0
         self.phase_time = pygame.time.get_ticks()
         self.screen.blit(self.images[self.image_num], (0, 0))
-
-
 
 
 class CalDisplay:
@@ -203,14 +204,25 @@ class CalDisplay:
             if i == 3:
                 break
 
+
 class TimeDisplay:
-    def __init__(self, screen, temp_image, temp, stock_names, stock_prices, feels_like=None, humidity=None,
-                 background_path=None, option=0):
+    def __init__(self, screen, lat, long, stock_names, city_name=None, background_path=None, option=0):
         """"
         options: 0 - Display stocks
                  1 - Display humidity
 
         """
+        #Extract values
+        self.stock_names = stock_names
+
+        # Set up wrappers
+        self.weather_wrapper = weatherAPI(lat=lat, long=long, city_name=city_name)
+        self.stock_wrapper = StockWrapper(stock_names)
+        self.stock_prices = self.stock_wrapper.all_stock_prices()
+        self.temp, self.humid, self.feels, self.temp_image = update_weather(self.weather_wrapper)
+        self.temp = str(self.temp)
+        self.humidity = self
+
         self.done = False
         self.option = option
         self.screen = screen
@@ -224,6 +236,8 @@ class TimeDisplay:
         # timers
         self.phase_time = pygame.time.get_ticks()
         self.start_time = pygame.time.get_ticks()
+        self.stock_update_time = pygame.time.get_ticks()
+        self.temp_update_time = pygame.time.get_ticks()
         self.num_phases = len(stock_names)
 
         # time
@@ -234,19 +248,13 @@ class TimeDisplay:
 
         # stocks
         if option == 0:
-            self.stock_names = stock_names
-            self.stock_prices = stock_prices
             self.disp_stock_num = 0
             self.stock_sprite = self.text_sprite(f"{self.stock_names[self.disp_stock_num]} {self.stock_prices[self.disp_stock_num]}", self.font_stocks, (WIDTH / 2, 8), WHITE, center=True)
             self.sprites.add(self.stock_sprite)
 
         # weather
-        self.temp = str(temp)
-        self.humid = str(humidity)
-        self.feels = str(feels_like)
         self.temp_sprite = self.text_sprite(self.temp + "F", self.font_temp, (WIDTH/4, HEIGHT*7/8), WHITE, center=True)
         self.sprites.add(self.temp_sprite)
-        self.temp_image = temp_image
         self.temp_image_sprite = self.image_sprite(self.temp_image, (WIDTH*3/4, 54), center=True)
         self.sprites.add(self.temp_image_sprite)
         if option == 1:
@@ -281,10 +289,24 @@ class TimeDisplay:
         self.current_time = now.strftime("%H:%M")
         self.time_sprite.update_text(self.current_time)
 
+
+
         if self.option == 0:
             if pygame.time.get_ticks() - self.phase_time > 5000:
                 self.change_stock()
 
+        if pygame.time.get_ticks() - self.temp_update_time > 15000:
+            self.temp, self.humid, self.feels, self.temp_image = update_weather(self.weather_wrapper)
+            self.humid_sprite.update_text(self.humid + "%")
+            self.temp_sprite.update_text(self.temp + " F")
+            self.feels_sprite.update_text(self.feels + " F")
+            self.temp_image_sprite.update_image(self.temp_image)
+            self.temp_update_time = pygame.time.get_ticks()
+            print("Weather updated!!")
+
+        if pygame.time.get_ticks() - self.stock_update_time > 360000:
+            self.stock_prices = self.stock_wrapper.all_stock_prices()
+            self.stock_update_time = pygame.time.get_ticks()
 
         if pygame.time.get_ticks() - self.start_time > 40000:
             self.done = True
@@ -329,15 +351,36 @@ class TimeDisplay:
             size = image.size
             data = image.tobytes()
 
+            self.position = position
+            self.center = center
+
             pygame.sprite.Sprite.__init__(self)
             self.image = pygame.image.fromstring(data, size, mode)
             self.image = pygame.transform.scale(self.image, (32, 32))
             self.rect = self.image.get_rect()
 
-            if center:
-                self.rect.center = position
+            if self.center:
+                self.rect.center = self.position
             else:
-                self.rect.topleft = position
+                self.rect.topleft = self.position
+
+        def update_image(self, image):
+            # defaults to the top left
+            mode = image.mode
+            size = image.size
+            data = image.tobytes()
+
+            pygame.sprite.Sprite.__init__(self)
+            self.image = pygame.image.fromstring(data, size, mode)
+            self.image = pygame.transform.scale(self.image, (32, 32))
+            self.rect = self.image.get_rect()
+
+            if self.center:
+                self.rect.center = self.position
+            else:
+                self.rect.topleft = self.position
+
+
 
     def start(self):
         self.done = False
@@ -452,6 +495,12 @@ class ErrorDisplay:
 
         def update(self):
             self.rect.move_ip(-2, 0)
+
+def update_weather(weather):
+    temp, humidity, feels_like = weather.get_temp()
+    weather_image = weather.get_icon_image()
+    return str(temp), str(humidity), str(feels_like), weather_image
+
 
 
 
