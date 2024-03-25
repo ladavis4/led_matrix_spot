@@ -295,16 +295,16 @@ class TimeDisplay:
             if pygame.time.get_ticks() - self.phase_time > 5000:
                 self.change_stock()
 
-        if pygame.time.get_ticks() - self.temp_update_time > 15000:
+        if pygame.time.get_ticks() - self.temp_update_time > 60000:
             self.temp, self.humid, self.feels, self.temp_image = update_weather(self.weather_wrapper)
             self.humid_sprite.update_text(self.humid + "%")
-            self.temp_sprite.update_text(self.temp + " F")
-            self.feels_sprite.update_text(self.feels + " F")
+            self.temp_sprite.update_text(self.temp + "F")
+            self.feels_sprite.update_text(self.feels + "F")
             self.temp_image_sprite.update_image(self.temp_image)
             self.temp_update_time = pygame.time.get_ticks()
             print("Weather updated!!")
 
-        if pygame.time.get_ticks() - self.stock_update_time > 360000:
+        if pygame.time.get_ticks() - self.stock_update_time > 60000:
             self.stock_prices = self.stock_wrapper.all_stock_prices()
             self.stock_update_time = pygame.time.get_ticks()
 
