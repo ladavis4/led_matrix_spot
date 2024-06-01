@@ -1,11 +1,12 @@
 import pygame
 from utils.constants import *
-from datetime import datetime
+from datetime import datetime, date
 import pytz
 from tzlocal import get_localzone
 import os
 from utils.weather_functions import weatherAPI
 from utils.stock_functions import StockWrapper
+import calendar
 
 
 class ImageDisplay:
@@ -220,7 +221,6 @@ class TimeDisplay:
         self.stock_wrapper = StockWrapper(stock_names)
         self.stock_prices = self.stock_wrapper.all_stock_prices()
         self.temp, self.humid, self.feels, self.temp_image = update_weather(self.weather_wrapper)
-        self.temp = str(self.temp)
         self.humidity = self
 
         self.done = False
@@ -229,8 +229,7 @@ class TimeDisplay:
         # render all the text and add to the pygame sprites
         self.font_time = pygame.font.Font(r"VeraMono.ttf", 20)
         self.font_stocks = pygame.font.Font(r"VeraMono.ttf", 10)
-        self.font_temp = pygame.font.Font(r"VeraMono.ttf", 14)
-        self.font_humid = pygame.font.Font(r"VeraMono.ttf", 12)
+        self.font_date = pygame.font.Font(r"VeraMono.ttf", 14)
         self.sprites = pygame.sprite.Group()
 
         # timers
@@ -246,6 +245,9 @@ class TimeDisplay:
         self.time_sprite = self.text_sprite(self.current_time, self.font_time, (WIDTH/2, HEIGHT/2), WHITE, center=True)
         self.sprites.add(self.time_sprite)
 
+        # Date
+        self.date = datetime.now().strftime('%a')
+
         # stocks
         if option == 0:
             self.disp_stock_num = 0
@@ -253,13 +255,13 @@ class TimeDisplay:
             self.sprites.add(self.stock_sprite)
 
         # weather
-        self.temp_sprite = self.text_sprite(self.temp + "F", self.font_temp, (WIDTH/4, HEIGHT*7/8), WHITE, center=True)
+        self.temp_sprite = self.text_sprite(self.date, self.font_date, (WIDTH/4, HEIGHT*7/8), WHITE, center=True)
         self.sprites.add(self.temp_sprite)
         self.temp_image_sprite = self.image_sprite(self.temp_image, (WIDTH*3/4, 54), center=True)
         self.sprites.add(self.temp_image_sprite)
         if option == 1:
-            self.humid_sprite = self.text_sprite(self.humid + "%", self.font_temp, (WIDTH/4, 8), WHITE, center=True)
-            self.feels_sprite = self.text_sprite(self.feels + "F", self.font_temp, (WIDTH*3/4, 8), WHITE, center=True)
+            self.humid_sprite = self.text_sprite(self.humid + "%", self.font_date, (WIDTH/4, 8), WHITE, center=True)
+            self.feels_sprite = self.text_sprite(self.feels + "F", self.font_date, (WIDTH*3/4, 8), WHITE, center=True)
             self.sprites.add(self.humid_sprite)
             self.sprites.add(self.feels_sprite)
 
@@ -297,8 +299,9 @@ class TimeDisplay:
 
         if pygame.time.get_ticks() - self.temp_update_time > 60000:
             self.temp, self.humid, self.feels, self.temp_image = update_weather(self.weather_wrapper)
+            self.date = datetime.now().strftime('%a')
             self.humid_sprite.update_text(self.humid + "%")
-            self.temp_sprite.update_text(self.temp + "F")
+            self.temp_sprite.update_text(self.date)
             self.feels_sprite.update_text(self.feels + "F")
             self.temp_image_sprite.update_image(self.temp_image)
             self.temp_update_time = pygame.time.get_ticks()
