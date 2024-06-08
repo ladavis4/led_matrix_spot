@@ -1,4 +1,5 @@
 <form action="/" method = "POST">
+    <p>ON/OFF <input type = "checkbox" name = "button_on" value="true" id="button5"/></p>
     <p>Display Pictures <input type = "checkbox" name = "button_img" value="true" id="button1"/></p>
     <p>Display Weather <input type = "checkbox" name = "button_time" value="true" id="button2"/></p>
     <p>Display Calendar <input type = "checkbox" name = "button_cal" value="true" id="button3"/></p>
@@ -14,6 +15,7 @@
 <script>
 
 window.onload = function() {
+    var but_on = '{{data.button_on}}';
     var but_img = '{{data.button_img}}';
     var but_weather = '{{data.button_time}}';
     var but_cal = '{{data.button_cal}}';
@@ -22,7 +24,6 @@ window.onload = function() {
     var lat = '{{data.lat}}';
     var long = '{{data.long}}';
     var city_name = '{{data.city_name}}';
-
 
     document.getElementById("slider").value = sld_brightness;
     document.getElementById("num_lat").value = lat;
@@ -41,6 +42,9 @@ window.onload = function() {
     }
     if (but_spot=='True'){
         document.getElementById("button4").checked = true;
+    }
+    if(but_on=='True'){
+        document.getElementById("button5").checked = true;
     }
 };
 </script>
