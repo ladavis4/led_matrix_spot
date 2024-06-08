@@ -45,6 +45,11 @@ def main():
         settings.read_settings_json()
         print("Settings already exist, loading old values")
 
+        # Check if screen is on or off
+        if not settings.on:
+            sys.exit()
+
+
     ### IMAGE PROGRAM ###
     # Download images from Google Drive into images folder
     try:
@@ -165,6 +170,8 @@ def main():
         if current_time - t_settings > CHECK_SETTINGS_FREQ:
             t_settings = current_time
             # Apply the settings changes
+            if not settings.on:
+                sys.exit()
             old_brightness = settings.brightness
             settings.read_settings_json()
             display_programs = []

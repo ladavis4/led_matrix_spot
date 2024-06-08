@@ -1,7 +1,8 @@
 import json
 
 class Settings:
-    def __init__(self, show_image=True, show_time=True, show_calendar=True, show_spotify=True, brightness=100, lat=26.3851, long=127.8569, city_name=''):
+    def __init__(self, on=True, show_image=True, show_time=True, show_calendar=True, show_spotify=True, brightness=100, lat=26.3851, long=127.8569, city_name=''):
+        self.on = on
         self.show_image = show_image
         self.show_time = show_time
         self.show_calendar = show_calendar
@@ -15,7 +16,7 @@ class Settings:
         """"
         Writes the custom settings object to a dictionary
         """
-        settings_dict = {'button_img': self.show_image, 'button_time': self.show_time,
+        settings_dict = {'button_on': self.on, 'button_img': self.show_image, 'button_time': self.show_time,
                          'button_cal': self.show_calendar, 'button_spot': self.show_spotify,
                          'slider_brightness': 100, 'lat': self.lat, 'long':self.long, 'city_name':self.city_name}
         with open('temp/settings.json', 'w') as outfile:
@@ -31,6 +32,7 @@ class Settings:
         with open('temp/settings.json') as json_file:
             data = json.load(json_file)
 
+        self.on = data['button_on']
         self.show_image = data['button_img']
         self.show_time = data['button_time']
         self.show_calendar = data['button_cal']
