@@ -10,7 +10,7 @@ def on_connect(client, userdata, flags, reason_code, properties):
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
-    print(msg.topic + "" + str(msg.payload))
+    print(msg.payload)
 
 
 # Define constants
@@ -19,32 +19,45 @@ MQTT_PORT = 1883
 DEVICE_ID = "ledScreen"
 
 # Define MQTT Topics
-TOPIC_DISCOVERY = "homeassistant/switch/ledScreen/config"
 TOPIC_STATE = "oki/lr/screen/"
 TOPIC_COMMAND = "oki/lr/screen/set"
-TOPIC_AVAIL = "oki/lr/screen/available"
 
 #Discovery JSON
-dict = {
-    "name" : "LED Screen",
-    "unique_id": "ledScreen",
-    "state_topic": TOPIC_STATE,
-    "command_topic": TOPIC_COMMAND,
-    "payload_on": "ON",
-    "payload_off": "OFF",
-    "state_on" : "ON",
-    "state_off" : "OFF"
+dict1 = {
+    "name" : "power",
+    "unique_id": "ledscreen_power",
+    "command_topic": "oki/screen/power/set",
+    "optimistic": "true",
+    "device" : {
+        "name" : "RPi LED Device",
+        "identifiers": "ledscreen",
+        "manufacturer" : "Lenny Davis",
+        "model" : "Raspberry Pi 4B",
+    }
 }
-json_object = json.dumps(dict)
+
+dict2 = {
+    "name" : "brightness",
+    "unique_id": "ledscreen_brightness",
+    "command_topic": "oki/screen/bright/set",
+    "mode": "slider",
+    "device" : {
+        "name" : "RPi LED Device",
+        "identifiers": "ledscreen"
+    }
+}
+
+json_object_1 = json.dumps(dict1)
+json_object_2 = json.dumps(dict2)
 
 mqttc = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 mqttc.on_connect = on_connect
 mqttc.on_message = on_message
 
 mqttc.connect("192.168.0.95", 1883, 60)
-mqttc.publish(TOPIC_DISCOVERY, json_object)
-mqttc.publish(TOPIC_AVAIL, "online")
-
+mqttc.publish("homeassistant/switch/ledscreen/config", json_object_1)
+mqttc.publish("homeassistant/number/ledscreen/config", json_object_2)
+mqttc.subscribe("oki/screen/bright/set")
 # Blocking call that processes network traffic, dispatches callbacks and
 # handles reconnecting.
 # Other loop*() functions are available that give a threaded interface and a
