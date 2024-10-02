@@ -1,1 +1,1 @@
-{"button_img": false, "button_time": true, "button_cal": true, "button_spot": false, "slider_brightness": 100, "lat": 26.3851, "long": 127.8569, "city_name": ""}
+{"button_on": true, "button_img": false, "button_time": false, "button_cal": false, "button_spot": false, "slider_brightness": "66", "lat": 26.3851, "long": 127.8569, "city_name": ""}

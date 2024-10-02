@@ -11,6 +11,11 @@ STOCK_CHANGE_FREQ = 10  # seconds
 # Display program settings
 IMAGE_DISPLAY_TIME = 10  # seconds per image on screen
 
+#MQTT
+MQTT_SERVER = "192.168.0.95"
+MQTT_PORT = 1883
+DEVICE_ID = "ledScreen"
+
 # Other
 CHECK_SETTINGS_FREQ = 1000  # milliseconds
 

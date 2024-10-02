@@ -1,27 +1,25 @@
 import sys
-
 import google.auth.exceptions
-
 from utils.spotify_functions import SpotifyWrapper
 from utils.calendar_functions import Calendar
-from utils.weather_functions import weatherAPI
 from utils.constants import *
 from utils.settings_obj import Settings
-from utils.stock_functions import StockWrapper
 from utils.drive_functions import download_files
 from display_programs import CalDisplay, TimeDisplay, SpotifyDisplay, ImageDisplay, ErrorDisplay
+import paho.mqtt.client as mqtt
+import utils.mqtt_functions as mqtt_functions
 import pygame
 from PIL import Image
 import os
 import threading
 import time
+import json
 
 # Settings
 SIM = True
 
 # Globals
 global spotify_flag, spotify_image  # Information updated from callbacks
-
 
 def main():
     # variables to catch errors and display them to screen
@@ -38,17 +36,8 @@ def main():
     clock = pygame.time.Clock()
     display_programs = []
 
-    settings = Settings()
-    if not os.path.exists('temp/settings.json'):
-        settings.write_settings_to_json(debug=True)
-    else:
-        settings.read_settings_json()
-        print("Settings already exist, loading old values")
-
-        # Check if screen is on or off
-        if not settings.on:
-            sys.exit()
-
+    # Init settings values
+    settings = mqtt_functions.SettingMQTT()
 
     ### IMAGE PROGRAM ###
     # Download images from Google Drive into images folder
@@ -73,11 +62,8 @@ def main():
     except:
         start_successful = False
         error_strings.append("Stock API Failure")
-        settings.show_time = False
-        settings.write_settings_to_json()
+        settings.update_time(False)
         print("There was an error with stock price API, turning off the time display")
-
-
     # Weather wrapper setup
     try:
         stock_names = ['TSLA', 'PLTR', 'MTCH', 'TSP']
@@ -88,10 +74,8 @@ def main():
         start_successful = False
         error_strings.append("Weather API Failure")
         # Update the settings to not show the calendar
-        settings.show_time = False
-        settings.write_settings_to_json()
+        settings.update_time(False)
         print("There was an error with weather API, turning off the time display")
-
 
     ### CALENDAR PROGRAM ###
     try:
@@ -105,8 +89,7 @@ def main():
         start_successful = False
         error_strings.append("GCal Failure: Delete token.json and try again")
         # Update the settings to not show the calendar
-        settings.show_calendar = False
-        settings.write_settings_to_json()
+        settings.update_calendar(False)
         print("There was an error with GCal, turning off the calendar display")
 
     ### SPOTIFY PROGRAM ###
@@ -122,8 +105,7 @@ def main():
         start_successful = False
         error_strings.append("Spotify Failure")
         #Update settings
-        settings.show_spotify = False
-        settings.write_settings_to_json()
+        settings.update_spotify(False)
         print("There was an error with spotify, turning off the spotify display")
 
     # Set up LED Matrix
@@ -173,7 +155,6 @@ def main():
             if not settings.on:
                 sys.exit()
             old_brightness = settings.brightness
-            settings.read_settings_json()
             display_programs = []
             if settings.show_image:
                 display_programs.append(image_disp)
@@ -183,8 +164,10 @@ def main():
                 display_programs.append(cal_disp)
             num_of_programs = len(display_programs) - 1
 
+            """
             if old_brightness != settings.brightness:
                 sys.exit()
+            """
 
         if spotify_flag and settings.show_spotify:
             spot_disp.update(spotify_image)

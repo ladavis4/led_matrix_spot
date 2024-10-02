@@ -1,4 +1,6 @@
 import json
+import os
+import time
 
 import paho.mqtt.client as mqtt
 # The callback for when the client receives a CONNACK response from the server.
@@ -14,31 +16,49 @@ def power_callback(client, userdata, msg):
     # Handles power toggle for the LED Screen
     print("A power message was received")
     print(msg.payload.decode("utf-8"))
+    data['button_on'] = msg.payload.decode("utf-8") == 'ON'
+    with open(os.getcwd() + '/temp/settings.json', 'w') as outfile:
+        json.dump(data, outfile)
 
 def bright_callback(client, userdata, msg):
     # Handles brightness settings for the LED Screen
     print("A brightness message was received")
     print(msg.payload.decode("utf-8"))
+    data['slider_brightness'] = msg.payload.decode("utf-8")
+    with open(os.getcwd() + '/temp/settings.json', 'w') as outfile:
+        json.dump(data, outfile)
 
 def picture_callback(client, userdata, msg):
     # Handles brightness settings for the LED Screen
     print("A picture message was received")
     print(msg.payload.decode("utf-8"))
+    data['button_img'] = msg.payload.decode("utf-8") == 'ON'
+    with open(os.getcwd() + '/temp/settings.json', 'w') as outfile:
+        json.dump(data, outfile)
 
 def weather_callback(client, userdata, msg):
     # Handles brightness settings for the LED Screen
     print("A weather message was received")
     print(msg.payload.decode("utf-8"))
+    data['button_time'] = msg.payload.decode("utf-8") == 'ON'
+    with open(os.getcwd() + '/temp/settings.json', 'w') as outfile:
+        json.dump(data, outfile)
 
 def calendar_callback(client, userdata, msg):
     # Handles brightness settings for the LED Screen
     print("A calendar message was received")
     print(msg.payload.decode("utf-8"))
+    data['button_cal'] = msg.payload.decode("utf-8") == 'ON'
+    with open(os.getcwd() + '/temp/settings.json', 'w') as outfile:
+        json.dump(data, outfile)
 
 def spotify_callback(client, userdata, msg):
     # Handles brightness settings for the LED Screen
     print("A spotify message was received")
-    print(msg.payload.decode("utf-8"))
+    data['button_spot'] = msg.payload.decode("utf-8") == 'ON'
+    with open(os.getcwd() + '/temp/settings.json', 'w') as outfile:
+        json.dump(data, outfile)
+
 
 def on_connect(client, userdata, flags, reason_code, properties):
     print(f"Connected with result code {reason_code}")
@@ -48,7 +68,7 @@ def on_connect(client, userdata, flags, reason_code, properties):
 
     client.publish("homeassistant/switch/ledscreen_power/config", power_json_obj)
     client.publish("homeassistant/number/ledscreen/config", bright_json_obj)
-    client.publish("homeassistant/switch/ledscreen_picture_sw/config", picture_json_obj)
+    client.publish("homeassistant/button/ledscreen_picture_sw/config", picture_json_obj)
     client.publish("homeassistant/switch/ledscreen_weather_sw/config", weather_json_obj)
     client.publish("homeassistant/switch/ledscreen_calednar_sw/config", calendar_json_obj)
     client.publish("homeassistant/switch/ledscreen_spotify_sw/config", spotify_json_obj)
@@ -143,5 +163,16 @@ client.on_message = on_message
 
 client.connect("192.168.0.95", 1883, 60)
 
+try:
+    print(os.getcwd())
+    with open(os.getcwd() + '/temp/settings.json') as json_file:
+        data = json.load(json_file)
+        print("Settings loaded successfully")
+except:
+    print("Settings file doesn't exist, run main.py first!")
 
-client.loop_forever()
+
+client.loop_start()
+while 1:
+    print("Hi")
+    time.sleep(5)
