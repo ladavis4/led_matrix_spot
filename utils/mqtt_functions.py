@@ -14,6 +14,13 @@ class SettingMQTT:
         self.long = long
         self.city_name = city_name
 
+        self.power_topic_state = "oki/screen/power/state"
+        #self.power_topic_state = "oki/screen/bright/state"
+        self.pic_topic_state = "oki/screen/pic/state"
+        self.weather_topic_state = "oki/screen/weather/state"
+        self.calendar_topic_state = "oki/screen/cal/state"
+        self.spotify_topic_state = "oki/screen/spot/state"
+
         self.client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
@@ -100,79 +107,22 @@ class SettingMQTT:
         print("An unidentified message was detected")
         print(msg.payload.decode("utf-8"))
 
+    def create_and_publish_discovery(self):
+        f = open('mqtt_discovery.json')
+        data = json.load(f)
+        self.client.publish("homeassistant/switch/ledscreen_power/config", json.dumps(data['power_discovery']))
+        self.client.publish("homeassistant/number/ledscreen/config", json.dumps(data['brightness_discovery']))
+        self.client.publish("homeassistant/switch/ledscreen_picture_sw/config", json.dumps((data['picture_discovery'])))
+        self.client.publish("homeassistant/switch/ledscreen_weather_sw/config", json.dumps(data['weather_discovery']))
+        self.client.publish("homeassistant/switch/ledscreen_calednar_sw/config", json.dumps(data['calendar_discovery']))
+        self.client.publish("homeassistant/switch/ledscreen_spotify_sw/config", json.dumps(data['spotify_discovery']))
+        f.close()
+
     def on_connect(self, client, userdata, flags, reason_code, properties):
         print(f"Connected with result code {reason_code}")
         # Subscribing in on_connect() means that if we lose the connection and
         # reconnect then subscriptions will be renewed.
         client.subscribe("oki/screen/#")
-
-        # Discovery JSONs
-        # Discovery JSON
-        power_json = {
-            "name": "power",
-            "unique_id": "ledscreen_power",
-            "command_topic": "oki/screen/power/set",
-            "optimistic": "true",
-            "device": {
-                "name": "RPi LED Device",
-                "identifiers": "ledscreen",
-                "manufacturer": "Lenny Davis",
-                "model": "Raspberry Pi 4B",
-            }
-        }
-        bright_json = {
-            "name": "brightness",
-            "unique_id": "ledscreen_brightness",
-            "command_topic": "oki/screen/bright/set",
-            "mode": "slider",
-            "device": {
-                "name": "RPi LED Device",
-                "identifiers": "ledscreen"
-            }
-        }
-        picture_json = {
-            "name": "pictures_sw",
-            "unique_id": "ledscreen_picture_sw",
-            "command_topic": "oki/screen/pic/set",
-            "device": {
-                "name": "RPi LED Device",
-                "identifiers": "ledscreen"
-            }
-        }
-        weather_json = {
-            "name": "weather_sw",
-            "unique_id": "ledscreen_weather_sw",
-            "command_topic": "oki/screen/weather/set",
-            "device": {
-                "name": "RPi LED Device",
-                "identifiers": "ledscreen"
-            }
-        }
-        calendar_json = {
-            "name": "calendar_sw",
-            "unique_id": "ledscreen_calendar_sw",
-            "command_topic": "oki/screen/cal/set",
-            "device": {
-                "name": "RPi LED Device",
-                "identifiers": "ledscreen"
-            }
-        }
-        spotify_json = {
-            "name": "spotify_sw",
-            "unique_id": "ledscreen_spotify_sw",
-            "command_topic": "oki/screen/spot/set",
-            "device": {
-                "name": "RPi LED Device",
-                "identifiers": "ledscreen"
-            }
-        }
-
-        client.publish("homeassistant/switch/ledscreen_power/config", json.dumps(power_json))
-        client.publish("homeassistant/number/ledscreen/config", json.dumps(bright_json))
-        client.publish("homeassistant/button/ledscreen_picture_sw/config", json.dumps(picture_json))
-        client.publish("homeassistant/switch/ledscreen_weather_sw/config", json.dumps(weather_json))
-        client.publish("homeassistant/switch/ledscreen_calednar_sw/config", json.dumps(calendar_json))
-        client.publish("homeassistant/switch/ledscreen_spotify_sw/config", json.dumps(spotify_json))
 
         client.message_callback_add("oki/screen/power/set", self.power_callback)
         client.message_callback_add("oki/screen/bright/set", self.bright_callback)
@@ -181,3 +131,21 @@ class SettingMQTT:
         client.message_callback_add("oki/screen/weather/set", self.weather_callback)
         client.message_callback_add("oki/screen/spot/set", self.spotify_callback)
 
+
+        self.create_and_publish_discovery()
+
+        self.client.publish(self.power_topic_state, get_state_string(self.on))
+        self.client.publish(self.pic_topic_state, get_state_string(self.show_image))
+        self.client.publish(self.weather_topic_state, get_state_string(self.show_time))
+        self.client.publish(self.calendar_topic_state, get_state_string(self.show_calendar))
+        self.client.publish(self.spotify_topic_state, get_state_string(self.show_spotify))
+
+
+def get_state_string(state):
+    if state:
+        return "ON".encode("utf-8")
+    else:
+        return "OFF".encode("utf-8")
+
+def get_number_string(number):
+    return number.encode("utf-8")

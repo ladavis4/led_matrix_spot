@@ -3,7 +3,7 @@ WIDTH = 64
 HEIGHT = 64
 
 # API call settings
-SPOTIFY_UPDATE_FREQ = 3  # seconds
+SPOTIFY_UPDATE_FREQ = 3000  # miliseconds
 WEATHER_UPDATE_FREQ = 300  # seconds
 STOCKS_UPDATE_FREQ = 3600  # seconds
 STOCK_CHANGE_FREQ = 10  # seconds

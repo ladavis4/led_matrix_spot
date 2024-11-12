@@ -291,8 +291,6 @@ class TimeDisplay:
         self.current_time = now.strftime("%H:%M")
         self.time_sprite.update_text(self.current_time)
 
-
-
         if self.option == 0:
             if pygame.time.get_ticks() - self.phase_time > 5000:
                 self.change_stock()

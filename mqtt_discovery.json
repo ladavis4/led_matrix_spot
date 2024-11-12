@@ -1,0 +1,65 @@
+{ "power_discovery":{
+    "name" : "power",
+    "unique_id": "ledscreen_power",
+    "command_topic": "oki/screen/power/set",
+    "state_topic": "oki/screen/power/state",
+    "optimistic": "true",
+    "device" : {
+        "name" : "RPi LED Device",
+        "identifiers": "ledscreen",
+        "manufacturer" : "Lenny Davis",
+        "model" : "Raspberry Pi 4B"
+    }
+  },
+  "brightness_discovery": {
+    "name" : "brightness",
+    "unique_id": "ledscreen_brightness",
+    "command_topic": "oki/screen/bright/set",
+    "state_topic": "oki/screen/bright/state",
+    "mode": "slider",
+    "device" : {
+        "name" : "RPi LED Device",
+        "identifiers": "ledscreen"
+    }
+  },
+  "picture_discovery":{
+    "name" : "pictures_sw",
+    "unique_id": "ledscreen_picture_sw",
+    "command_topic": "oki/screen/pic/set",
+    "state_topic": "oki/screen/pic/state",
+    "device" : {
+        "name" : "RPi LED Device",
+        "identifiers": "ledscreen"
+    }
+  },
+  "weather_discovery":{
+    "name" : "weather_sw",
+    "unique_id": "ledscreen_weather_sw",
+    "command_topic": "oki/screen/weather/set",
+    "state_topic": "oki/screen/weather/state",
+    "device" : {
+        "name" : "RPi LED Device",
+        "identifiers": "ledscreen"
+    }
+  },
+ "calendar_discovery":{
+    "name" : "calendar_sw",
+    "unique_id": "ledscreen_calendar_sw",
+    "command_topic": "oki/screen/cal/set",
+    "state_topic": "oki/screen/cal/state",
+    "device" : {
+        "name" : "RPi LED Device",
+        "identifiers": "ledscreen"
+    }
+ },
+"spotify_discovery":{
+    "name" : "spotify_sw",
+    "unique_id": "ledscreen_spotify_sw",
+    "command_topic": "oki/screen/spot/set",
+    "state_topic": "oki/screen/spot/state",
+    "device" : {
+        "name" : "RPi LED Device",
+        "identifiers": "ledscreen"
+    }
+  }
+}
