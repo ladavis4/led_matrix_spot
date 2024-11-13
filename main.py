@@ -1,18 +1,14 @@
-import sys
 import google.auth.exceptions
 from utils.spotify_functions import SpotifyWrapper
 from utils.calendar_functions import Calendar
 from utils.constants import *
 from utils.drive_functions import download_files
 from display_programs import CalDisplay, TimeDisplay, SpotifyDisplay, ImageDisplay, ErrorDisplay
-import paho.mqtt.client as mqtt
 import utils.mqtt_functions as mqtt_functions
 import pygame
 from PIL import Image
 import os
-import threading
 import time
-import json
 
 # Settings
 SIM = True
@@ -183,6 +179,9 @@ def main():
 
         #Stopping and resetting:
         pygame.quit()
+        if not SIM:
+            matrix.SetBrightness(1) #Turns the brightness wayyyyy down to make the screen off
+            #matrix.brightness = 1 This might also be the answer
 
 
 ### CALLBACK FUNCTIONS TO UPDATE GLOBAL INFORMATION ###

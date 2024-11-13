@@ -15,7 +15,7 @@ class SettingMQTT:
         self.city_name = city_name
 
         self.power_topic_state = "oki/screen/power/state"
-        #self.power_topic_state = "oki/screen/bright/state"
+        self.brightness_topic_state = "oki/screen/bright/state"
         self.pic_topic_state = "oki/screen/pic/state"
         self.weather_topic_state = "oki/screen/weather/state"
         self.calendar_topic_state = "oki/screen/cal/state"
@@ -135,6 +135,7 @@ class SettingMQTT:
         self.create_and_publish_discovery()
 
         self.client.publish(self.power_topic_state, get_state_string(self.on))
+        self.client.publish(self.bright_topic_state, get_number_string(self.brightness))
         self.client.publish(self.pic_topic_state, get_state_string(self.show_image))
         self.client.publish(self.weather_topic_state, get_state_string(self.show_time))
         self.client.publish(self.calendar_topic_state, get_state_string(self.show_calendar))
