@@ -3,7 +3,7 @@ from utils.constants import *
 import json
 
 class SettingMQTT:
-    def __init__(self, on=True, show_image=True, show_time=True, show_calendar=True, show_spotify=True, brightness=100, lat=26.3851, long=127.8569, city_name=''):
+    def __init__(self, on=True, show_image=True, show_time=True, show_calendar=True, show_spotify=True, brightness=100, lat=26.3851, long=127.8569, city_name='', debug=False):
         self.on = on
         self.show_image = show_image
         self.show_time = show_time
@@ -13,9 +13,10 @@ class SettingMQTT:
         self.lat = lat
         self.long = long
         self.city_name = city_name
+        self.debug = debug
 
         self.power_topic_state = "oki/screen/power/state"
-        self.brightness_topic_state = "oki/screen/bright/state"
+        self.bright_topic_state = "oki/screen/bright/state"
         self.pic_topic_state = "oki/screen/pic/state"
         self.weather_topic_state = "oki/screen/weather/state"
         self.calendar_topic_state = "oki/screen/cal/state"
@@ -62,50 +63,51 @@ class SettingMQTT:
     def on_message(self, client, userdata, msg):
         # This function is the general MQTT callback. If the message is unidentified it
         # will handle the data
-        print("An unidentified message was detected")
-        print(msg.payload.decode("utf-8"))
+        if self.debug:
+            print("An unidentified message was detected")
+            print(msg.payload.decode("utf-8"))
 
     def power_callback(self, client, userdata, msg):
         # Handles power toggle for the LED Screen
-        print("A power message was received")
-        print(msg.payload.decode("utf-8"))
+        if self.debug:
+            print("A power message was received")
+            print(msg.payload.decode("utf-8"))
         self.on = msg.payload.decode("utf-8") == 'ON'
 
     def bright_callback(self, client, userdata, msg):
         # Handles brightness settings for the LED Screen
-        print("A brightness message was received")
-        print(msg.payload.decode("utf-8"))
+        if self.debug:
+            print("A brightness message was received")
+            print(msg.payload.decode("utf-8"))
         self.brightness = msg.payload.decode("utf-8")
 
     def picture_callback(self, client, userdata, msg):
         # Handles brightness settings for the LED Screen
-        print("A picture message was received")
-        print(msg.payload.decode("utf-8"))
+        if self.debug:
+            print("A picture message was received")
+            print(msg.payload.decode("utf-8"))
         self.show_image= msg.payload.decode("utf-8") == 'ON'
 
     def weather_callback(self, client, userdata, msg):
         # Handles brightness settings for the LED Screen
-        print("A weather message was received")
-        print(msg.payload.decode("utf-8"))
+        if self.debug:
+            print("A weather message was received")
+            print(msg.payload.decode("utf-8"))
         self.show_time = msg.payload.decode("utf-8") == 'ON'
 
     def calendar_callback(self, client, userdata, msg):
         # Handles brightness settings for the LED Screen
-        print("A calendar message was received")
-        print(msg.payload.decode("utf-8"))
+        if self.debug:
+            print("A calendar message was received")
+            print(msg.payload.decode("utf-8"))
         self.show_calendar = msg.payload.decode("utf-8") == 'ON'
 
     def spotify_callback(self, client, userdata, msg):
         # Handles brightness settings for the LED Screen
-        print("A spotify message was received")
-        print(msg.payload.decode("utf-8"))
+        if self.debug:
+            print("A spotify message was received")
+            print(msg.payload.decode("utf-8"))
         self.show_spotify = msg.payload.decode("utf-8") == 'ON'
-
-    def on_message(self, client, userdata, msg):
-        # This function is the general MQTT callback. If the message is unidentified it
-        # will handle the data
-        print("An unidentified message was detected")
-        print(msg.payload.decode("utf-8"))
 
     def create_and_publish_discovery(self):
         f = open('mqtt_discovery.json')
@@ -135,7 +137,7 @@ class SettingMQTT:
         self.create_and_publish_discovery()
 
         self.client.publish(self.power_topic_state, get_state_string(self.on))
-        self.client.publish(self.bright_topic_state, get_number_string(self.brightness))
+        self.client.publish(self.bright_topic_state, self.brightness)
         self.client.publish(self.pic_topic_state, get_state_string(self.show_image))
         self.client.publish(self.weather_topic_state, get_state_string(self.show_time))
         self.client.publish(self.calendar_topic_state, get_state_string(self.show_calendar))

@@ -16,10 +16,9 @@ SIM = True
 # Globals
 global spotify_flag, spotify_image  # Information updated from callbacks
 
-
 def main():
     # Begin MQTT monitoring
-    settings = mqtt_functions.SettingMQTT(on=False, show_time=False)
+    settings = mqtt_functions.SettingMQTT(on=False)
 
     while 1:
         while not settings.on:  # This will force the system to sleep while waiting for the signal to turn on
