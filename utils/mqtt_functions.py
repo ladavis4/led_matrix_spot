@@ -31,22 +31,43 @@ class SettingMQTT:
 
     def update_on(self, value):
         self.on = value
+        if value:
+            self.client.publish(self.power_topic_state, 'ON'.encode("utf-8"))
+        else:
+            self.client.publish(self.power_topic_state, 'OFF'.encode("utf-8"))
 
     def update_image(self, value):
         self.show_image = value
+        if value:
+            self.client.publish(self.pic_topic_state, 'ON'.encode("utf-8"))
+        else:
+            self.client.publish(self.pic_topic_state, 'OFF'.encode("utf-8"))
 
     def update_time(self, value):
         self.show_time = value
+        if value:
+            self.client.publish(self.weather_topic_state, 'ON'.encode("utf-8"))
+        else:
+            self.client.publish(self.weather_topic_state, 'OFF'.encode("utf-8"))
 
     def update_calendar(self, value):
         self.show_calendar = value
+        if value:
+            self.client.publish(self.calendar_topic_state, 'ON'.encode("utf-8"))
+        else:
+            self.client.publish(self.calendar_topic_state, 'OFF'.encode("utf-8"))
 
     def update_spotify(self, value):
         self.show_spotify = value
+        if value:
+            self.client.publish(self.spotify_topic_state, 'ON'.encode("utf-8"))
+        else:
+            self.client.publish(self.spotify_topic_state, 'OFF'.encode("utf-8"))
 
     def update_brightness(self, value):
         # Value should be an int
         self.brightness = value
+        self.client.publish(self.bright_topic_state, value.encode("utf-8"))
 
     def update_lat(self, value):
         # Value should be a float
@@ -59,7 +80,8 @@ class SettingMQTT:
     def update_city(self, value):
         # Value should be a string
         self.city_name = value
-
+        
+    
     def on_message(self, client, userdata, msg):
         # This function is the general MQTT callback. If the message is unidentified it
         # will handle the data
@@ -73,6 +95,7 @@ class SettingMQTT:
             print("A power message was received")
             print(msg.payload.decode("utf-8"))
         self.on = msg.payload.decode("utf-8") == 'ON'
+        self.client.publish(self.power_topic_state, msg.payload)
 
     def bright_callback(self, client, userdata, msg):
         # Handles brightness settings for the LED Screen
@@ -80,6 +103,7 @@ class SettingMQTT:
             print("A brightness message was received")
             print(msg.payload.decode("utf-8"))
         self.brightness = msg.payload.decode("utf-8")
+        self.client.publish(self.bright_topic_state, msg.payload)
 
     def picture_callback(self, client, userdata, msg):
         # Handles brightness settings for the LED Screen
@@ -87,6 +111,7 @@ class SettingMQTT:
             print("A picture message was received")
             print(msg.payload.decode("utf-8"))
         self.show_image= msg.payload.decode("utf-8") == 'ON'
+        self.client.publish(self.pic_topic_state, msg.payload)
 
     def weather_callback(self, client, userdata, msg):
         # Handles brightness settings for the LED Screen
@@ -94,6 +119,7 @@ class SettingMQTT:
             print("A weather message was received")
             print(msg.payload.decode("utf-8"))
         self.show_time = msg.payload.decode("utf-8") == 'ON'
+        self.client.publish(self.weather_topic_state, msg.payload)
 
     def calendar_callback(self, client, userdata, msg):
         # Handles brightness settings for the LED Screen
@@ -101,6 +127,7 @@ class SettingMQTT:
             print("A calendar message was received")
             print(msg.payload.decode("utf-8"))
         self.show_calendar = msg.payload.decode("utf-8") == 'ON'
+        self.client.publish(self.calendar_topic_state, msg.payload)
 
     def spotify_callback(self, client, userdata, msg):
         # Handles brightness settings for the LED Screen
@@ -108,6 +135,7 @@ class SettingMQTT:
             print("A spotify message was received")
             print(msg.payload.decode("utf-8"))
         self.show_spotify = msg.payload.decode("utf-8") == 'ON'
+        self.client.publish(self.spotify_topic_state, msg.payload)
 
     def create_and_publish_discovery(self):
         f = open('mqtt_discovery.json')
@@ -137,7 +165,7 @@ class SettingMQTT:
         self.create_and_publish_discovery()
 
         self.client.publish(self.power_topic_state, get_state_string(self.on))
-        self.client.publish(self.bright_topic_state, self.brightness)
+        self.client.publish(self.bright_topic_state, get_number_string(self.brightness))
         self.client.publish(self.pic_topic_state, get_state_string(self.show_image))
         self.client.publish(self.weather_topic_state, get_state_string(self.show_time))
         self.client.publish(self.calendar_topic_state, get_state_string(self.show_calendar))
@@ -151,4 +179,4 @@ def get_state_string(state):
         return "OFF".encode("utf-8")
 
 def get_number_string(number):
-    return number.encode("utf-8")
+    return str(number).encode("utf-8")

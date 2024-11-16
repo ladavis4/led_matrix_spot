@@ -19,6 +19,7 @@ global spotify_flag, spotify_image  # Information updated from callbacks
 def main():
     # Begin MQTT monitoring
     settings = mqtt_functions.SettingMQTT(on=False)
+    matrix = None
 
     while 1:
         while not settings.on:  # This will force the system to sleep while waiting for the signal to turn on
@@ -28,13 +29,16 @@ def main():
         error_strings = []
 
         if not SIM:
-            from rgbmatrix import RGBMatrix, RGBMatrixOptions
-            options = RGBMatrixOptions()
-            options.rows = WIDTH
-            options.cols = HEIGHT
-            options.gpio_slowdown = 4
-            options.brightness = settings.brightness
-            matrix = RGBMatrix(options=options)
+            if matrix is None: 
+                from rgbmatrix import RGBMatrix, RGBMatrixOptions
+                options = RGBMatrixOptions()
+                options.rows = WIDTH
+                options.cols = HEIGHT
+                options.gpio_slowdown = 4
+                options.brightness = settings.brightness
+                matrix = RGBMatrix(options=options)
+            else:
+                matrix.brightness = settings.brightness
 
         ### MAIN SCREEN, PROGRAMS, PYGAME ###
         pygame.init()
@@ -46,13 +50,13 @@ def main():
         ### IMAGE PROGRAM ###
         # Download images from Google Drive into images folder
         try:
-            download_files(folder_id=DRIVE_IMAGE_FOLDER_ID, local_folder_path=os.path.join(os.getcwd(), "images"))
+            download_files(folder_id=DRIVE_IMAGE_FOLDER_ID, local_folder_path="images/")
         except:
             print("Failed to download new image files - try deleting token.json")
-        image_names = os.listdir(os.path.join(os.getcwd(), "images"))
+        image_names = os.listdir("images")
         image_path_list = []
         for name in image_names:
-            image_path_list.append(os.path.join(os.getcwd(), "images", name))
+            image_path_list.append(os.path.join("images", name))
         image_disp = ImageDisplay(screen_main, image_path_list, IMAGE_DISPLAY_TIME)
         if settings.show_image:
             display_programs.append(image_disp)
@@ -97,15 +101,18 @@ def main():
             print("There was an error with GCal, turning off the calendar display")
 
         ### SPOTIFY PROGRAM ###
+        global spotify_flag, spotify_image
+        spotify_start_successful = False
+        spotify_flag = False
         try:
             spotify = SpotifyWrapper()
-            global spotify_flag, spotify_image
-            spotify_flag = False
             spotify_image = None
             check_spotify(spotify)
             spot_disp = SpotifyDisplay(screen_main, spotify_image)
-        except:
+            spotify_start_successful = True
+        except Exception as error:
             start_successful = False
+            print("An exception occurred:", error) # An exception occurred: division by zero
             error_strings.append("Spotify Failure")
             #Update settings
             settings.update_spotify(False)
@@ -137,12 +144,14 @@ def main():
         program = display_programs[program_num]
         t_settings = pygame.time.get_ticks()
         t_spotify = pygame.time.get_ticks()
+        done = False
         while settings.on:
             # check if the settings changed
             current_time = pygame.time.get_ticks()
-            if current_time - t_spotify > SPOTIFY_UPDATE_FREQ:
+            if current_time - t_spotify > SPOTIFY_UPDATE_FREQ and spotify_start_successful:
                 check_spotify(spotify)
                 t_spotify = current_time
+                print("Spotify checked") 
             if current_time - t_settings > CHECK_SETTINGS_FREQ:
                 t_settings = current_time
                 display_programs = []
@@ -152,11 +161,16 @@ def main():
                     display_programs.append(time_disp)
                 if settings.show_calendar:
                     display_programs.append(cal_disp)
+                if not SIM:
+                    if settings.brightness != matrix.brightness:
+                        matrix.brightness = settings.brightness
                 num_of_programs = len(display_programs) - 1
+            
             if spotify_flag and settings.show_spotify:
                 spot_disp.update(spotify_image)
-
-            done = program.update()
+            else: 
+                done = program.update()
+            
             if done:
                 program_num += 1
                 if program_num > num_of_programs:
@@ -179,8 +193,9 @@ def main():
         #Stopping and resetting:
         pygame.quit()
         if not SIM:
-            matrix.SetBrightness(1) #Turns the brightness wayyyyy down to make the screen off
-            #matrix.brightness = 1 This might also be the answer
+            #matrix.SetBrightness(1) #Turns the brightness wayyyyy down to make the screen off
+            matrix.Clear()
+            matrix.brightness = 1 #This might also be the answer
 
 
 ### CALLBACK FUNCTIONS TO UPDATE GLOBAL INFORMATION ###

@@ -56,7 +56,7 @@ class SpotifyWrapper:
             return None
 
     def read_credentials(self, credential_path ='credentials/spotify_credentials.json', debug=False):
-        with open(os.path.join(os.getcwd(), credential_path)) as json_file:
+        with open(credential_path) as json_file:
             data = json.load(json_file)
 
         self.CID = data['cid']
@@ -73,5 +73,6 @@ if __name__ == "__main__":
     out = caller.check_if_online()
     print(out)
     img = caller.get_current_img()
-    img.show()
+    if img is not None:
+        img.show()
 
