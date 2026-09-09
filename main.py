@@ -133,6 +133,7 @@ def main():
         options.cols = HEIGHT
         options.gpio_slowdown = 4
         options.brightness = settings.brightness
+        options.drop_privileges = False
         matrix = RGBMatrix(options=options)
 
     # Check to make sure at least one display is turned on
