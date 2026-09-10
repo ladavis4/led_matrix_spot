@@ -17,7 +17,7 @@ import threading
 import time
 
 # Settings
-SIM = False
+SIM = True
 
 # Globals
 global spotify_flag, spotify_image  # Information updated from callbacks
