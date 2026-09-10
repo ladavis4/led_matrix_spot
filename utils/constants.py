@@ -3,13 +3,13 @@ WIDTH = 64
 HEIGHT = 64
 
 # API call settings
-SPOTIFY_UPDATE_FREQ = 3  # seconds
-WEATHER_UPDATE_FREQ = 300  # seconds
+SPOTIFY_UPDATE_FREQ = 5  # seconds
+WEATHER_UPDATE_FREQ = 3600  # seconds
 STOCKS_UPDATE_FREQ = 3600  # seconds
 STOCK_CHANGE_FREQ = 10  # seconds
 
 # Display program settings
-IMAGE_DISPLAY_TIME = 10  # seconds per image on screen
+IMAGE_DISPLAY_TIME = 20  # seconds per image on screen
 
 # Other
 CHECK_SETTINGS_FREQ = 1000  # milliseconds
