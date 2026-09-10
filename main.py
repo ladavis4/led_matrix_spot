@@ -17,7 +17,7 @@ import threading
 import time
 
 # Settings
-SIM = True
+SIM = False
 
 # Globals
 global spotify_flag, spotify_image  # Information updated from callbacks
@@ -54,6 +54,7 @@ def main():
     # Download images from Google Drive into images folder
     try:
         download_files(folder_id=DRIVE_IMAGE_FOLDER_ID, local_folder_path=os.path.join(os.getcwd(), "images"))
+        print("downloaded drive files")
     except:
         print("Failed to download new image files - try deleting token.json")
     image_names = os.listdir(os.path.join(os.getcwd(), "images"))
@@ -70,6 +71,7 @@ def main():
     try:
         global temp, weather_image, stock_prices
         stock_prices = None
+        print("Stocks Good")
     except:
         start_successful = False
         error_strings.append("Stock API Failure")
@@ -84,6 +86,7 @@ def main():
         time_disp = TimeDisplay(screen_main, settings.lat, settings.long, stock_names, option=1)
         if settings.show_time:
             display_programs.append(time_disp)
+        print("Weather API good")
     except:
         start_successful = False
         error_strings.append("Weather API Failure")
@@ -100,6 +103,7 @@ def main():
         cal_disp = CalDisplay(screen_main, times, events)
         if settings.show_calendar:
             display_programs.append(cal_disp)
+        print("calendar api good")
     except google.auth.exceptions.RefreshError as e:
         # Display error message
         start_successful = False
@@ -118,6 +122,7 @@ def main():
         spotify_image = None
         check_spotify(spotify)
         spot_disp = SpotifyDisplay(screen_main, spotify_image)
+        print("Spotify api good")
     except:
         start_successful = False
         error_strings.append("Spotify Failure")
@@ -132,9 +137,11 @@ def main():
         options.rows = WIDTH
         options.cols = HEIGHT
         options.gpio_slowdown = 4
+        options.hardware_mapping = 'adafruit-hat'
         options.brightness = settings.brightness
         options.drop_privileges = False
         matrix = RGBMatrix(options=options)
+        print("RGB Matrix activated")
 
     # Check to make sure at least one display is turned on
     if not settings.show_spotify and not settings.show_time and not settings.show_calendar and not settings.show_image:
@@ -164,6 +171,7 @@ def main():
     program = display_programs[program_num]
 
     t_settings = pygame.time.get_ticks()
+    print("Starting main loop")
     ### MAIN LOOP ###
     while 1:
         # check if the settings changed
